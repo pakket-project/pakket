@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -17,9 +15,6 @@ var (
 var rootCmd = &cobra.Command{
 	Use:   "stew",
 	Short: "Stew is a package manager for macOS. Contribute: https://github.com/stewproject/stew",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Run stew help for usage")
-	},
 }
 
 func Execute() {
