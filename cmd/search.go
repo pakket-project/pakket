@@ -8,7 +8,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"github.com/stewproject/stew/internals/packages"
+	"github.com/stewproject/stew/internals/pkg"
 	"github.com/theckman/yacspin"
 )
 
@@ -49,7 +49,7 @@ var searchCmd = &cobra.Command{
 		spinner.Start()
 
 		spinner.Message("Searching for formula " + color.CyanString(packageName))
-		def := packages.GetPackageData(packageName)
+		def := pkg.GetPackageData(packageName)
 		if err != nil {
 			spinner.StopFailMessage("Cannot find formula " + color.CyanString(packageName))
 			spinner.StopFail()
