@@ -24,8 +24,8 @@ var syncCmd = &cobra.Command{
 		spinner.Start()
 		spinner.Message("Syncing taps...")
 
-		for i := 0; i < len(config.Config.Repositories); i++ {
-			repo := config.Config.Repositories[i]
+		for i := 0; i < len(config.Config.Repositories.Locations); i++ {
+			repo := config.Config.Repositories.Locations[i]
 
 			if exist := util.DoesPathExist(repo.Path + "/.git"); !exist {
 				spinner.StopCharacter("")

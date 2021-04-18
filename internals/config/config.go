@@ -17,8 +17,12 @@ type RepositoriesMetadata struct {
 	PackagesPath string `toml:"packagesPath"`
 }
 
+type Repositories struct {
+	Locations []RepositoriesMetadata `toml:"locations"`
+}
+
 type ConfigStruct struct {
-	Repositories []RepositoriesMetadata `toml:"repositories"`
+	Repositories Repositories `toml:"repositories"`
 }
 
 var (

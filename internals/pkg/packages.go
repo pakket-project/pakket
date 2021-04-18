@@ -9,8 +9,8 @@ import (
 )
 
 func GetPackageData(packageName string) *Definition {
-	for i := 0; i < len(config.Config.Repositories); i++ {
-		repo := config.Config.Repositories[i]
+	for i := 0; i < len(config.Config.Repositories.Locations); i++ {
+		repo := config.Config.Repositories.Locations[i]
 		packagePath := repo.Path + repo.PackagesPath + "/" + packageName
 
 		if exists := util.DoesPathExist(packagePath); !exists {
