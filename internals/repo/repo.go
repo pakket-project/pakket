@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/pelletier/go-toml"
+	"github.com/stewproject/stew/internals/config"
 	"github.com/stewproject/stew/util"
 )
 
@@ -22,7 +23,7 @@ type ConfigStruct struct {
 }
 
 func GetConfig(repo string) *ConfigStruct {
-	data, err := os.ReadFile(util.RepoPath + "/" + repo)
+	data, err := os.ReadFile(path.Join(util.RepoPath, repo, "config.toml"))
 	if err != nil {
 		panic(err)
 	}
@@ -46,32 +47,32 @@ func GetConfigFromData(data []byte) *ConfigStruct {
 	return &def
 }
 
-func AddRepo(url string) (*git.Repository, error) {
+func AddRepo(gitURL string) error {
 	// Clone repository to temp dir
-	repo, err := git.PlainClone(util.TempRepoPath, false, &git.CloneOptions{
-		URL:   url,
+	_, err := git.PlainClone(util.TempRepoPath, false, &git.CloneOptions{
+		URL:   gitURL,
 		Depth: 1,
 	})
 	if err != nil {
-		return repo, err
+		return err
 	}
 
 	// Get config
 	configData, err := os.ReadFile(path.Join(util.TempRepoPath, "config.toml"))
 	if err != nil {
 		util.RemoveFolder(util.TempRepoPath)
-		return repo, err
+		return err
 	}
-	config := GetConfigFromData(configData)
+	metadata := GetConfigFromData(configData)
 
 	// Path to repo
-	repoPath := path.Join(util.RepoPath, config.Repository.Name)
+	repoPath := path.Join(util.RepoPath, metadata.Repository.Name)
 
 	// Check if name contains subfolder
-	if subfolder := strings.Contains(config.Repository.Name, "/"); subfolder {
-		paths := strings.Split(config.Repository.Name, "/")
+	if subfolder := strings.Contains(metadata.Repository.Name, "/"); subfolder {
+		paths := strings.Split(metadata.Repository.Name, "/")
 		if len(paths) > 2 {
-			return repo, errors.New("repository name can only contain one slash (/)")
+			return errors.New("repository name can only contain one slash (/)")
 		}
 		// create directory
 		err = os.Mkdir(path.Join(util.RepoPath, paths[0]), 0777)
@@ -80,7 +81,7 @@ func AddRepo(url string) (*git.Repository, error) {
 			if os.IsExist(err) {
 			} else {
 				util.RemoveFolder(util.TempRepoPath)
-				return repo, err
+				return err
 			}
 		}
 	}
@@ -88,8 +89,14 @@ func AddRepo(url string) (*git.Repository, error) {
 	err = os.Rename(util.TempRepoPath, repoPath)
 	if err != nil {
 		util.RemoveFolder(util.TempRepoPath)
-		return repo, err
+		return err
 	}
 
-	return repo, err
+	// Add to config
+	err = config.AddRepo(config.RepositoriesMetadata{Name: metadata.Repository.Name, Path: repoPath, PackagesPath: metadata.Repository.PackagesPath, GitURL: gitURL})
+	if err != nil {
+		return err
+	}
+
+	return err
 }
