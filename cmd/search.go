@@ -4,11 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/stewproject/stew/internals/pkg"
+	"github.com/stewproject/stew/util"
 	"github.com/theckman/yacspin"
 )
 
@@ -28,20 +28,8 @@ var searchCmd = &cobra.Command{
 	Example: "stew search wget",
 	Run: func(cmd *cobra.Command, args []string) {
 		packageName := args[0]
-		cfg := yacspin.Config{
-			Frequency:         50 * time.Millisecond,
-			HideCursor:        true,
-			ColorAll:          false,
-			CharSet:           yacspin.CharSets[14],
-			Suffix:            " ",
-			SuffixAutoColon:   false,
-			StopCharacter:     "✓",
-			StopFailCharacter: "✗",
-			StopColors:        []string{"fgGreen"},
-			StopFailColors:    []string{"fgRed"},
-			Colors:            []string{"fgCyan"},
-		}
-		spinner, err := yacspin.New(cfg)
+
+		spinner, err := yacspin.New(util.SpinnerConf)
 		if err != nil {
 			panic(err)
 		}

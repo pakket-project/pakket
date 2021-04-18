@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/fatih/color"
 	"github.com/go-git/go-git/v5"
@@ -20,20 +19,7 @@ var syncCmd = &cobra.Command{
 	Use:   "sync",
 	Short: "Pull the latest repositories",
 	Run: func(cmd *cobra.Command, args []string) {
-		cfg := yacspin.Config{
-			Frequency:         50 * time.Millisecond,
-			HideCursor:        true,
-			ColorAll:          false,
-			CharSet:           yacspin.CharSets[14],
-			Suffix:            " ",
-			SuffixAutoColon:   false,
-			StopCharacter:     "✓",
-			StopFailCharacter: "✗",
-			StopColors:        []string{"fgGreen"},
-			StopFailColors:    []string{"fgRed"},
-			Colors:            []string{"fgCyan"},
-		}
-		spinner, _ := yacspin.New(cfg)
+		spinner, _ := yacspin.New(util.SpinnerConf)
 
 		spinner.Start()
 		spinner.Message("Syncing taps...")
