@@ -1,9 +1,9 @@
 package config
 
 import (
-	"os"
+	"fmt"
 
-	"github.com/pelletier/go-toml"
+	"github.com/spf13/viper"
 	"github.com/stewproject/stew/util"
 )
 
@@ -26,14 +26,19 @@ var (
 )
 
 func GetConfig() ConfigStruct {
-	data, err := os.ReadFile(util.ConfigFile)
+	viper.SetDefault("ContentDir", "content")
+	viper.SetConfigName("config")
+	viper.SetConfigType("toml")
+	viper.AddConfigPath(util.StewPath)
+
+	err := viper.ReadInConfig()
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("fatal error reading config file: %s", err))
 	}
 
-	err = toml.Unmarshal(data, &Config)
+	err = viper.Unmarshal(&Config)
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("fatal error parsing config file: %s", err))
 	}
 
 	return Config
