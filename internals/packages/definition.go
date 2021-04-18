@@ -35,14 +35,9 @@ type Binaries struct {
 	Mojave     BinariesMetadata `toml:"mojave"`
 }
 
-type Build struct {
-	Steps []string `toml:"steps"`
-}
-
 type Definition struct {
 	Package  Package  `toml:"package"`
 	Binaries Binaries `toml:"binaries"`
-	Build    Build    `toml:"build"`
 }
 
 func ParseDefinition(definition []byte) (Definition, error) {
