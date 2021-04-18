@@ -6,6 +6,7 @@ import (
 	"runtime"
 
 	"github.com/stewproject/stew/cmd"
+	"github.com/stewproject/stew/internals/config"
 )
 
 func main() {
@@ -20,6 +21,8 @@ func main() {
 		fmt.Printf("Apple Silicon is not yet supported.\n")
 		os.Exit(1)
 	}
+
+	config.GetConfig()
 
 	cmd.Execute()
 }
