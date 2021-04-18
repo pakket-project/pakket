@@ -7,6 +7,7 @@ import (
 type Package struct {
 	Name         string               `toml:"name"`
 	Description  string               `toml:"description"`
+	Version      string               `toml:"version"`
 	License      string               `toml:"license"`
 	Homepage     string               `toml:"homepage"`
 	Url          string               `toml:"url"`
@@ -23,6 +24,7 @@ type DependencyMetadata struct {
 
 type BinariesMetadata struct {
 	Url       string `toml:"url"`
+	BinPath   string `toml:"binPath"`
 	Version   string `toml:"version"`
 	Sha256    string `toml:"sha256"`
 	Available bool   `toml:"available"`
