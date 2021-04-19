@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"os"
+	"path"
 
 	"github.com/pelletier/go-toml"
 	"github.com/stewproject/stew/internals/config"
@@ -17,7 +18,7 @@ func GetPackageData(packageName string) *Definition {
 			continue
 		}
 
-		data, err := os.ReadFile(packagePath + "/definition.toml")
+		data, err := os.ReadFile(path.Join(packagePath, "definition.toml"))
 		if err != nil {
 			panic(err)
 		}
