@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/theckman/yacspin"
@@ -21,4 +22,14 @@ var (
 		StopFailColors:    []string{"fgRed"},
 		Colors:            []string{"fgCyan"},
 	}
+	// Spinner = &yacspin.Spinner{}
 )
+
+// Stops spinner to print a message. Uses Println
+func PrintSpinnerMsg(s *yacspin.Spinner, msg string) {
+	s.StopCharacter("")
+	s.Stop()
+	fmt.Println(msg)
+	s.Start()
+	s.StopCharacter(SpinnerConf.StopCharacter)
+}

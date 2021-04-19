@@ -57,7 +57,7 @@ var addCmd = &cobra.Command{
 			addedRepos = append(addedRepos, metadata.Repository.Name)
 		}
 
-		spinner.StopMessage("Successfully added the repositories " + color.CyanString(strings.Join(addedRepos, ", ")))
+		spinner.StopMessage("Successfully added the repositories " + color.CyanString(strings.Join(addedRepos, ", ")) + ".")
 		spinner.Stop()
 	},
 }
