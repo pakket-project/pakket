@@ -41,8 +41,9 @@ var syncCmd = &cobra.Command{
 			}
 
 			spinner.Message("syncing " + repo.Name + "...")
-			err = tree.Pull(&git.PullOptions{RemoteName: "origin"})
-			if err.Error() == "already up-to-date" {
+			err = tree.Pull(&git.PullOptions{})
+			if err == git.NoErrAlreadyUpToDate {
+				// do nothing
 			} else if err != nil {
 				panic(fmt.Errorf("error while pulling git repo (%s) %s", repo.Name, err))
 			}
