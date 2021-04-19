@@ -12,13 +12,13 @@ import (
 func main() {
 	// Error if not running MacOS
 	if runtime.GOOS != "darwin" {
-		fmt.Printf("You must be on MacOS to run Stew!\n")
+		fmt.Println("You must be on MacOS to run Stew!")
 		os.Exit(1)
 	}
 
 	// Error if running Apple Silicon
 	if runtime.GOARCH == "arm64" {
-		fmt.Printf("Apple Silicon is not yet supported.\n")
+		fmt.Println("Apple Silicon is not yet supported.")
 		os.Exit(1)
 	}
 
