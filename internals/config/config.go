@@ -14,6 +14,7 @@ type RepositoriesMetadata struct {
 	Path         string `toml:"path"`
 	PackagesPath string `toml:"packagesPath"`
 	GitURL       string `toml:"gitUrl"`
+	IsGit        bool   `toml:"isGit"`
 }
 
 type Repositories struct {

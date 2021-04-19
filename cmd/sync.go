@@ -27,13 +27,11 @@ var syncCmd = &cobra.Command{
 		for i := 0; i < len(config.Config.Repositories.Locations); i++ {
 			repo := config.Config.Repositories.Locations[i]
 
-			if exist := util.DoesPathExist(repo.Path + "/.git"); !exist {
-				spinner.StopCharacter("")
-				spinner.Stop()
-				fmt.Printf("Repository %s is not a git repo, skipping...\n", color.CyanString(repo.Name))
-				spinner.Start()
+			if !config.Config.Repositories.Locations[i].IsGit {
+				// not a git repo, not syncing
 				continue
 			}
+
 			r, err := git.PlainOpen(repo.Path)
 			if err != nil {
 				panic(fmt.Errorf("error while opening git repo (%s) %s", repo.Name, err))
