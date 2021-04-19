@@ -9,7 +9,16 @@ import (
 	"github.com/stewproject/stew/util"
 )
 
-func GetPackageData(packageName string) *Definition {
+type PackageNotFoundError struct {
+	Package string
+}
+
+func (pkg PackageNotFoundError) Error() string {
+	return fmt.Sprintf("package %s not found", pkg.Package)
+}
+
+// Search all repositories for specific package
+func GetPackageData(packageName string) (*Definition, error) {
 	for i := 0; i < len(config.Config.Repositories.Locations); i++ {
 		repo := config.Config.Repositories.Locations[i]
 		packagePath := repo.Path + repo.PackagesPath + "/" + packageName

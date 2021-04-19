@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -15,6 +14,7 @@ func init() {
 	rootCmd.AddCommand(searchCmd)
 }
 
+// search
 var searchCmd = &cobra.Command{
 	Use:     "search package",
 	Short:   "Search for a specific package",
@@ -31,18 +31,23 @@ var searchCmd = &cobra.Command{
 		spinner.Start()
 
 		spinner.Message("Searching for package " + color.CyanString(packageName))
-		pkg := pkg.GetPackageData(packageName) // Get package
-		if err != nil {
-			spinner.StopFailMessage("Cannot find package " + color.CyanString(packageName))
+		pkgData, err := pkg.GetPackageData(packageName) // Get package
+		if _, ok := err.(pkg.PackageNotFoundError); ok {
+			spinner.StopFailMessage("Cannot find package " + color.CyanString(packageName) + "\n")
 			spinner.StopFail()
-			os.Exit(1)
+			return
+		} else if err != nil {
+			spinner.StopFailMessage("Error while searching package\n" + err.Error())
+			spinner.StopFail()
+			return
 		}
+
 		spinner.StopMessage("Found package " + color.CyanString(packageName) + ":\n")
 		spinner.Stop()
 
-		fmt.Printf("Name: %s\n", pkg.Package.Name)
-		fmt.Printf("Description: %s\n", pkg.Package.Description)
-		fmt.Printf("Version: %s\n", pkg.Package.Version)
-		fmt.Printf("Homepage: %s\n", pkg.Package.Homepage)
+		fmt.Printf("Name: %s\n", pkgData.Package.Name)
+		fmt.Printf("Description: %s\n", pkgData.Package.Description)
+		fmt.Printf("Version: %s\n", pkgData.Package.Version)
+		fmt.Printf("Homepage: %s\n", pkgData.Package.Homepage)
 	},
 }
