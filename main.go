@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"syscall"
 
 	"github.com/stewproject/stew/cmd"
 	"github.com/stewproject/stew/internals/config"
@@ -16,13 +17,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Error if running Apple Silicon
-	if runtime.GOARCH == "arm64" {
-		fmt.Println("Apple Silicon is not yet supported.")
-		os.Exit(1)
+	// Check if running on Intel or Apple Silicon
+	r, err := syscall.Sysctl("sysctl.proc_translated")
+	if err != nil && err.Error() == "no such file or directory" {
+		config.GetConfig()
+
+		cmd.Execute()
 	}
 
-	config.GetConfig()
-
-	cmd.Execute()
+	if r == "\x00\x00\x00" || r == "\x01\x00\x00" {
+		fmt.Println("Looks like you're running Stew on Apple Silicon! We don't support this yet.")
+	}
 }
