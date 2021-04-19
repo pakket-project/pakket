@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/fatih/color"
 	"github.com/go-git/go-git/v5"
 	"github.com/spf13/cobra"
 	"github.com/stewproject/stew/internals/config"
