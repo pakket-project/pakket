@@ -30,13 +30,28 @@ var (
 )
 
 func GetConfig() ConfigStruct {
-	// viper.SetDefault("ContentDir", "content")
 	viper.SetConfigName("config")
 	viper.SetConfigType("toml")
 	viper.AddConfigPath(util.StewPath)
 
 	err := viper.ReadInConfig()
-	if err != nil {
+	// If config is not found
+	if _, errNotExists := err.(viper.ConfigFileNotFoundError); errNotExists {
+		// Check if StewPath exists, if not, creates directory
+		if exists := util.DoesPathExist(util.StewPath); !exists {
+			panic(fmt.Errorf("%s doesn't exist", util.StewPath))
+		}
+
+		_, err = os.Create(util.ConfigFile) // create config file
+		if err != nil {
+			panic(err)
+		}
+
+		err = viper.ReadInConfig() // read file again
+		if err != nil {
+			panic(fmt.Errorf("fatal error reading config file: %s", err))
+		}
+	} else if err != nil {
 		panic(fmt.Errorf("fatal error reading config file: %s", err))
 	}
 
