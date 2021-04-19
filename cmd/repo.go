@@ -22,8 +22,8 @@ var repoCmd = &cobra.Command{
 }
 
 var addCmd = &cobra.Command{
-	Use:     "add <git-links>",
-	Short:   "Adds repositories. Supports multiple links",
+	Use:     "add git-links",
+	Short:   "Add repositories. Supports multiple links",
 	Args:    cobra.MinimumNArgs(1),
 	Example: "stew repo add https://github.com/stewproject/packages https://github.com/stingalleman/stew-repository",
 	Run: func(cmd *cobra.Command, args []string) {

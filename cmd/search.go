@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
@@ -17,14 +16,9 @@ func init() {
 }
 
 var searchCmd = &cobra.Command{
-	Use:   "search formula",
-	Short: "Search for a specific formula.",
-	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("you must provide a formula to search for")
-		}
-		return nil
-	},
+	Use:     "search package",
+	Short:   "Search for a specific package",
+	Args:    cobra.MinimumNArgs(1),
 	Example: "stew search wget",
 	Run: func(cmd *cobra.Command, args []string) {
 		packageName := args[0]
@@ -36,19 +30,19 @@ var searchCmd = &cobra.Command{
 
 		spinner.Start()
 
-		spinner.Message("Searching for formula " + color.CyanString(packageName))
-		def := pkg.GetPackageData(packageName)
+		spinner.Message("Searching for package " + color.CyanString(packageName))
+		pkg := pkg.GetPackageData(packageName) // Get package
 		if err != nil {
-			spinner.StopFailMessage("Cannot find formula " + color.CyanString(packageName))
+			spinner.StopFailMessage("Cannot find package " + color.CyanString(packageName))
 			spinner.StopFail()
 			os.Exit(1)
 		}
-		spinner.StopMessage("Found formula " + color.CyanString(packageName) + ":\n")
+		spinner.StopMessage("Found package " + color.CyanString(packageName) + ":\n")
 		spinner.Stop()
 
-		fmt.Printf("Name: %s\n", def.Package.Name)
-		fmt.Printf("Description: %s\n", def.Package.Description)
-		fmt.Printf("Version: %s\n", "TBD")
-		fmt.Printf("Homepage: %s\n", def.Package.Homepage)
+		fmt.Printf("Name: %s\n", pkg.Package.Name)
+		fmt.Printf("Description: %s\n", pkg.Package.Description)
+		fmt.Printf("Version: %s\n", pkg.Package.Version)
+		fmt.Printf("Homepage: %s\n", pkg.Package.Homepage)
 	},
 }
