@@ -22,13 +22,13 @@ type ConfigStruct struct {
 	Repository Repository `toml:"repository"`
 }
 
-func GetConfig(repo string) *ConfigStruct {
-	data, err := os.ReadFile(path.Join(util.RepoPath, repo, "config.toml"))
+func GetMetadataFromRepo(repo string) *Metadata {
+	data, err := os.ReadFile(path.Join(util.RepoPath, repo, "metadata.toml"))
 	if err != nil {
 		panic(err)
 	}
 
-	var def ConfigStruct
+	var def Metadata
 	err = toml.Unmarshal(data, &def)
 	if err != nil {
 		panic(err)
@@ -37,8 +37,8 @@ func GetConfig(repo string) *ConfigStruct {
 	return &def
 }
 
-func GetConfigFromData(data []byte) *ConfigStruct {
-	var def ConfigStruct
+func UnmarshalMetadata(data []byte) *Metadata {
+	var def Metadata
 	err := toml.Unmarshal(data, &def)
 	if err != nil {
 		panic(err)
@@ -58,13 +58,12 @@ func AddRepo(gitURL string) error {
 		return err
 	}
 
-	// Get config
-	configData, err := os.ReadFile(path.Join(util.TempRepoPath, "config.toml"))
+	Metadata, err := os.ReadFile(path.Join(util.TempRepoPath, "metadata.toml"))
 	if err != nil {
 		util.RemoveFolder(util.TempRepoPath)
 		return err
 	}
-	metadata := GetConfigFromData(configData)
+	metadata := UnmarshalMetadata(Metadata)
 
 	// Path to repo
 	repoPath := path.Join(util.RepoPath, metadata.Repository.Name)

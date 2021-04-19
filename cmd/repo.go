@@ -41,10 +41,11 @@ var addCmd = &cobra.Command{
 				spinner.StopFailMessage("error while adding repository")
 				spinner.StopFail()
 			}
-			var metadata *repo.ConfigStruct
+
+			var metadata *repo.Metadata
 			for b := range config.Config.Repositories.Locations {
 				if config.Config.Repositories.Locations[b].GitURL == repoLink {
-					metadata = repo.GetConfig(config.Config.Repositories.Locations[b].Name)
+					metadata = repo.GetMetadataFromRepo(config.Config.Repositories.Locations[b].Name)
 					break
 				}
 			}
