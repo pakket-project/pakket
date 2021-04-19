@@ -50,8 +50,9 @@ func GetConfigFromData(data []byte) *ConfigStruct {
 func AddRepo(gitURL string) error {
 	// Clone repository to temp dir
 	_, err := git.PlainClone(util.TempRepoPath, false, &git.CloneOptions{
-		URL:   gitURL,
-		Depth: 1,
+		URL: gitURL,
+		// SingleBranch: true,
+		// Depth: 1, // TODO: cloning with depth & pulling seems broken (https://github.com/go-git/go-git/issues/305)
 	})
 	if err != nil {
 		return err
@@ -93,7 +94,7 @@ func AddRepo(gitURL string) error {
 	}
 
 	// Add to config
-	err = config.AddRepo(config.RepositoriesMetadata{Name: metadata.Repository.Name, Path: repoPath, PackagesPath: metadata.Repository.PackagesPath, GitURL: gitURL})
+	err = config.AddRepo(config.RepositoriesMetadata{Name: metadata.Repository.Name, Path: repoPath, PackagesPath: metadata.Repository.PackagesPath, GitURL: gitURL, IsGit: true})
 	if err != nil {
 		return err
 	}
