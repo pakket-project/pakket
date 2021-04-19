@@ -16,11 +16,13 @@ func init() {
 	repoCmd.AddCommand(addCmd)
 }
 
+// repo
 var repoCmd = &cobra.Command{
 	Use:   "repo",
 	Short: "Main repository management command. See subcommands for details",
 }
 
+// repo add
 var addCmd = &cobra.Command{
 	Use:     "add git-links",
 	Short:   "Add repositories. Supports multiple links",
@@ -36,12 +38,14 @@ var addCmd = &cobra.Command{
 		for i := range args {
 			repoLink := args[i]
 
+			// Fetch repo, add to config
 			err := repo.AddRepo(repoLink)
 			if err != nil {
-				spinner.StopFailMessage("error while adding repository")
+				spinner.StopFailMessage("error while adding repository" + err.Error())
 				spinner.StopFail()
 			}
 
+			// Get repository metadata
 			var metadata *repo.Metadata
 			for b := range config.Config.Repositories.Locations {
 				if config.Config.Repositories.Locations[b].GitURL == repoLink {
@@ -52,6 +56,7 @@ var addCmd = &cobra.Command{
 
 			addedRepos = append(addedRepos, metadata.Repository.Name)
 		}
+
 		spinner.StopMessage("Successfully added the repositories " + color.CyanString(strings.Join(addedRepos, ", ")))
 		spinner.Stop()
 	},

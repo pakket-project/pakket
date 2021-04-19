@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	// Spinner config
 	SpinnerConf = yacspin.Config{
 		Frequency:         50 * time.Millisecond,
 		HideCursor:        true,

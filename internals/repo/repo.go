@@ -18,10 +18,11 @@ type Repository struct {
 	Maintainers  []string `toml:"maintainers"`
 }
 
-type ConfigStruct struct {
+type Metadata struct {
 	Repository Repository `toml:"repository"`
 }
 
+// Get metadata of repository
 func GetMetadataFromRepo(repo string) *Metadata {
 	data, err := os.ReadFile(path.Join(util.RepoPath, repo, "metadata.toml"))
 	if err != nil {
@@ -37,6 +38,7 @@ func GetMetadataFromRepo(repo string) *Metadata {
 	return &def
 }
 
+// Unmarshal metadata
 func UnmarshalMetadata(data []byte) *Metadata {
 	var def Metadata
 	err := toml.Unmarshal(data, &def)
@@ -47,6 +49,7 @@ func UnmarshalMetadata(data []byte) *Metadata {
 	return &def
 }
 
+// Add repository
 func AddRepo(gitURL string) error {
 	// Clone repository to temp dir
 	_, err := git.PlainClone(util.TempRepoPath, false, &git.CloneOptions{
@@ -58,6 +61,7 @@ func AddRepo(gitURL string) error {
 		return err
 	}
 
+	// Get metadata
 	Metadata, err := os.ReadFile(path.Join(util.TempRepoPath, "metadata.toml"))
 	if err != nil {
 		util.RemoveFolder(util.TempRepoPath)
@@ -86,6 +90,7 @@ func AddRepo(gitURL string) error {
 		}
 	}
 
+	// Move temp repo path to /usr/local/stew/repositories
 	err = os.Rename(util.TempRepoPath, repoPath)
 	if err != nil {
 		util.RemoveFolder(util.TempRepoPath)

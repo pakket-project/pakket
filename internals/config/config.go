@@ -26,9 +26,11 @@ type ConfigStruct struct {
 }
 
 var (
+	// Loaded config
 	Config ConfigStruct
 )
 
+// Get main Stew config
 func GetConfig() ConfigStruct {
 	viper.SetConfigName("config")
 	viper.SetConfigType("toml")
@@ -63,6 +65,7 @@ func GetConfig() ConfigStruct {
 	return Config
 }
 
+// Clone & add repository to config
 func AddRepo(repoMetadata RepositoriesMetadata) error {
 	GetConfig()
 

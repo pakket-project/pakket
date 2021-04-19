@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"fmt"
 	"os"
 	"path"
 
@@ -21,7 +22,7 @@ func (pkg PackageNotFoundError) Error() string {
 func GetPackageData(packageName string) (*Definition, error) {
 	for i := 0; i < len(config.Config.Repositories.Locations); i++ {
 		repo := config.Config.Repositories.Locations[i]
-		packagePath := repo.Path + repo.PackagesPath + "/" + packageName
+		packagePath := path.Join(repo.Path, repo.PackagesPath, packageName)
 
 		if exists := util.DoesPathExist(packagePath); !exists {
 			continue
@@ -31,12 +32,15 @@ func GetPackageData(packageName string) (*Definition, error) {
 		if err != nil {
 			panic(err)
 		}
+
 		var def Definition
 		err = toml.Unmarshal(data, &def)
 		if err != nil {
 			panic(err)
 		}
-		return &def
+
+		return &def, nil
 	}
-	return &Definition{} //TODO
+
+	return nil, PackageNotFoundError{Package: packageName}
 }

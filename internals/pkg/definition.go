@@ -42,6 +42,7 @@ type Definition struct {
 	Binaries Binaries `toml:"binaries"`
 }
 
+// Convert data to package definition
 func ParseDefinition(definition []byte) (Definition, error) {
 	var def Definition
 	err := toml.Unmarshal(definition, &def)
