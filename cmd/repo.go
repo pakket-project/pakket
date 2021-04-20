@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"path"
 	"strings"
 
 	"github.com/fatih/color"
@@ -39,19 +40,22 @@ var addCmd = &cobra.Command{
 			repoLink := args[i]
 
 			// Fetch repo, add to config
-			err := repo.AddRepo(repoLink)
-			if err != nil {
-				spinner.StopFailMessage("error while adding repository" + err.Error())
-				spinner.StopFail()
-			}
+			metadata, err := repo.AddRepo(repoLink)
 
-			// Get repository metadata
-			var metadata *repo.Metadata
-			for b := range config.Config.Repositories.Locations {
-				if config.Config.Repositories.Locations[b].GitURL == repoLink {
-					metadata = repo.GetMetadataFromRepo(config.Config.Repositories.Locations[b].Name)
-					break
-				}
+			// If repo already exists, but is not defined in the config
+			if _, ok := err.(repo.UndefinedRepositoryAlreadyExistsError); ok {
+				util.PrintSpinnerMsg(spinner, "Error while adding repository: "+color.RedString("Repository "+metadata.Repository.Name+"already exists, but is not defined in the config, so we're adding it."))
+				config.AddRepo(config.RepositoriesMetadata{
+					Name:         metadata.Repository.Name,
+					Path:         path.Join(util.RepoPath, metadata.Repository.Name),
+					PackagesPath: metadata.Repository.PackagesPath,
+					GitURL:       repoLink,
+					IsGit:        true,
+				})
+				continue
+			} else if err != nil {
+				util.PrintSpinnerMsg(spinner, "Error while adding repository: "+color.RedString(err.Error()))
+				continue
 			}
 
 			addedRepos = append(addedRepos, metadata.Repository.Name)
