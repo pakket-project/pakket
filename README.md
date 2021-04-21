@@ -4,8 +4,8 @@
   <hr />
 </p>
 <p align="center">
-  The package manager you didn’t know you missed. <br />
-  Focused on simplicity, functionality, and most importantly, speed.
+  The package manager for macOS you didn’t know you missed. <br />
+  Built with simplicity, functionality, and most importantly, speed in mind.
 </p>
 
 # Installation
