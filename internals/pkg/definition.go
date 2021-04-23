@@ -4,48 +4,55 @@ import (
 	"github.com/pelletier/go-toml"
 )
 
+type PackageDefinition struct {
+	Package Package `toml:"package"`
+}
+
 type Package struct {
-	Name         string               `toml:"name"`
-	Description  string               `toml:"description"`
-	Version      string               `toml:"version"`
-	License      string               `toml:"license"`
-	Homepage     string               `toml:"homepage"`
-	Url          string               `toml:"url"`
-	Sha256       string               `toml:"sha256"`
-	Dependencies []DependencyMetadata `toml:"dependencies"`
+	Name        string `toml:"name"`
+	Description string `toml:"description"`
+	Latest      string `toml:"version"`
+	License     string `toml:"license"`
+	Homepage    string `toml:"homepage"`
+	Url         string `toml:"url"`
+	Sha256      string `toml:"sha256"`
 }
 
-type DependencyMetadata struct {
-	Name     string `toml:"name"`
-	Optional bool   `toml:"optional"`
-	Version  string `toml:"version"`
-	Build    bool   `toml:"build"`
+type Dependencies struct {
+	Dependencies         []string `toml:"dependencies"`
+	BuildDependencies    []string `toml:"buildDependencies"`
+	OptionalDependencies []string `toml:"optionalDependencies"`
 }
 
-type BinariesMetadata struct {
-	Url       string `toml:"url"`
-	BinPath   string `toml:"binPath"`
-	Version   string `toml:"version"`
-	Sha256    string `toml:"sha256"`
-	Available bool   `toml:"available"`
+type BinaryMetadata struct {
+	Url               string   `toml:"url"`
+	Binpath           string   `toml:"binPath"`
+	Sha256            string   `toml:"sha256"`
+	SupportedVersions []string `toml:"supportedVersions"`
 }
 
 type Binaries struct {
-	BigSur_arm BinariesMetadata `toml:"big_sur_arm"`
-	BigSur     BinariesMetadata `toml:"big_sur"`
-	Catalina   BinariesMetadata `toml:"catalina"`
-	Mojave     BinariesMetadata `toml:"mojave"`
+	SupportsRosetta bool             `toml:"supportsRosetta"`
+	Intel           []BinaryMetadata `toml:"intel"`
+	Silicon         []BinaryMetadata `toml:"silicon"`
 }
 
-type Definition struct {
-	Package  Package  `toml:"package"`
-	Binaries Binaries `toml:"binaries"`
+type VersionMetadata struct {
+	Dependencies Dependencies `toml:"dependencies"`
+	Binaries     Binaries     `toml:"binaries"`
 }
 
 // Convert data to package definition
-func ParseDefinition(definition []byte) (Definition, error) {
-	var def Definition
-	err := toml.Unmarshal(definition, &def)
+func ParseVersion(versionMetadata []byte) (VersionMetadata, error) {
+	var metadata VersionMetadata
+	err := toml.Unmarshal(versionMetadata, &metadata)
+
+	return metadata, err
+}
+
+func ParsePackage(packageDefinition []byte) (PackageDefinition, error) {
+	var def PackageDefinition
+	err := toml.Unmarshal(packageDefinition, &def)
 
 	return def, err
 }

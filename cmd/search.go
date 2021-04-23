@@ -47,7 +47,7 @@ var searchCmd = &cobra.Command{
 
 		fmt.Printf("Name: %s\n", pkgData.Package.Name)
 		fmt.Printf("Description: %s\n", pkgData.Package.Description)
-		fmt.Printf("Version: %s\n", pkgData.Package.Version)
+		fmt.Printf("Latest version: %s\n", pkgData.Package.Latest)
 		fmt.Printf("Homepage: %s\n", pkgData.Package.Homepage)
 	},
 }
