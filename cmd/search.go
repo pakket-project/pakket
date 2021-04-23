@@ -31,7 +31,7 @@ var searchCmd = &cobra.Command{
 		spinner.Start()
 
 		spinner.Message("Searching for package " + color.CyanString(packageName))
-		pkgData, err := pkg.GetPackageData(packageName) // Get package
+		pkgData, _, err := pkg.GetPackageMetadata(packageName) // Get package
 		if _, ok := err.(pkg.PackageNotFoundError); ok {
 			spinner.StopFailMessage("Cannot find package " + color.CyanString(packageName) + "\n")
 			spinner.StopFail()

@@ -17,8 +17,17 @@ func (pkg PackageNotFoundError) Error() string {
 	return fmt.Sprintf("package %s not found", pkg.Package)
 }
 
+type VersionNotFoundError struct {
+	Package string
+	Version string
+}
+
+func (pkg VersionNotFoundError) Error() string {
+	return fmt.Sprintf("version %s of package %s not found", pkg.Version, pkg.Package)
+}
+
 // Search all repositories for specific package
-func GetPackageData(packageName string) (*PackageDefinition, error) {
+func GetPackageMetadata(packageName string) (pkgDef *PackageDefinition, pkgPath *string, err error) {
 	for i := 0; i < len(config.Config.Repositories.Locations); i++ {
 		repo := config.Config.Repositories.Locations[i]
 		packagePath := path.Join(repo.Path, repo.PackagesPath, packageName)
@@ -26,19 +35,41 @@ func GetPackageData(packageName string) (*PackageDefinition, error) {
 		if exists := util.DoesPathExist(packagePath); !exists {
 			continue
 		}
-		fmt.Println(path.Join(packagePath, "package.toml"))
+
 		data, err := os.ReadFile(path.Join(packagePath, "package.toml"))
 		if err != nil {
-			panic(err)
+			return nil, &packagePath, err
 		}
 
 		def, err := ParsePackage(data)
 		if err != nil {
-			panic(err)
+			return &def, &packagePath, err
 		}
 
-		return &def, nil
+		return &def, &packagePath, nil
 	}
 
-	return nil, PackageNotFoundError{Package: packageName}
+	return nil, nil, PackageNotFoundError{Package: packageName}
+}
+
+func GetPackageVersion(Package string, version string) (*VersionMetadata, error) {
+	_, pkgPath, err := GetPackageMetadata(Package)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(path.Join(*pkgPath, version, "metadata.toml"))
+	data, err := os.ReadFile(path.Join(*pkgPath, version, "metadata.toml"))
+	fmt.Println(data)
+	if os.IsNotExist(err) {
+		return nil, VersionNotFoundError{Package: Package, Version: version}
+	} else if err != nil {
+		return nil, err
+	}
+
+	metadata, err := ParseVersion(data)
+	if err != nil {
+		return &metadata, err
+	}
+
+	return &metadata, nil
 }
