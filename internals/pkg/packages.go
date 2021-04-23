@@ -57,9 +57,9 @@ func GetPackageVersion(Package string, version string) (*VersionMetadata, error)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(path.Join(*pkgPath, version, "metadata.toml"))
+
 	data, err := os.ReadFile(path.Join(*pkgPath, version, "metadata.toml"))
-	fmt.Println(data)
+
 	if os.IsNotExist(err) {
 		return nil, VersionNotFoundError{Package: Package, Version: version}
 	} else if err != nil {
