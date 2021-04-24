@@ -1,6 +1,6 @@
 <p align="center">
   <br />
-  <img src="https://raw.githubusercontent.com/stewproject/branding/main/logos/rounded-text/rounded-text.svg" alt="Stew" width="300" height="300">
+  <img src="https://raw.githubusercontent.com/stewproject/branding/main/logos/rounded/rounded.svg" alt="Stew" width="300" height="300">
   <hr />
 </p>
 <p align="center">
