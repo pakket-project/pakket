@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"path"
 	"strings"
 
@@ -44,7 +45,8 @@ var addCmd = &cobra.Command{
 
 			// If repo already exists, but is not defined in the config
 			if _, ok := err.(repo.UndefinedRepositoryAlreadyExistsError); ok {
-				util.PrintSpinnerMsg(spinner, "Error while adding repository: "+style.Error.Render("Repository "+metadata.Repository.Name+"already exists, but is not defined in the config, so we're adding it."))
+				util.PrintSpinnerMsg(spinner, fmt.Sprintf("Error while adding repository: %s", style.Error.Render(fmt.Sprintf("Repository %s already exists, but is not defined in the config, so Stew is adding it.", metadata.Repository.Name))))
+
 				config.AddRepo(config.RepositoriesMetadata{
 					Name:         metadata.Repository.Name,
 					Path:         path.Join(util.RepoPath, metadata.Repository.Name),
@@ -54,14 +56,14 @@ var addCmd = &cobra.Command{
 				})
 				continue
 			} else if err != nil {
-				util.PrintSpinnerMsg(spinner, "Error while adding repository: "+style.Error.Render(err.Error()))
+				util.PrintSpinnerMsg(spinner, fmt.Sprintf("Error while adding repository: %s", style.Error.Render(err.Error())))
 				continue
 			}
 
 			addedRepos = append(addedRepos, metadata.Repository.Name)
 		}
 
-		spinner.StopMessage("Successfully added the repositories " + style.Pkg.Render(strings.Join(addedRepos, ", ")) + ".")
+		spinner.StopMessage(fmt.Sprintf("Successfully added the repositories %s.", style.Pkg.Render(strings.Join(addedRepos, ", "))))
 		spinner.Stop()
 	},
 }

@@ -40,7 +40,7 @@ var syncCmd = &cobra.Command{
 				panic(fmt.Errorf("error while opening git repo (%s) %s", repo.Name, err))
 			}
 
-			spinner.Message("syncing " + repo.Name + "...")
+			spinner.Message(fmt.Sprintf("syncing %s...", repo.Name))
 			err = tree.Pull(&git.PullOptions{})
 			if err == git.NoErrAlreadyUpToDate {
 				// do nothing

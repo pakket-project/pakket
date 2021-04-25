@@ -34,15 +34,15 @@ var searchCmd = &cobra.Command{
 
 		packageName := args[0]
 
-		spinner.Message("Searching for package " + style.Pkg.Render(packageName))
+		spinner.Message(fmt.Sprintf("Searching for package %s", style.Pkg.Render(packageName)))
 
 		pkgData, _, err := pkg.GetPackageMetadata(packageName) // Get package
 		if _, ok := err.(pkg.PackageNotFoundError); ok {
-			spinner.StopFailMessage("Cannot find package " + style.Pkg.Render(packageName) + "\n")
+			spinner.StopFailMessage(fmt.Sprintf("Cannot find package %s\n", style.Pkg.Render(packageName)))
 			spinner.StopFail()
 			return
 		} else if err != nil {
-			spinner.StopFailMessage("Error while searching package\n" + err.Error())
+			spinner.StopFailMessage(fmt.Sprintf("Error while searching package: %s", err.Error()))
 			spinner.StopFail()
 			return
 		}
@@ -58,7 +58,7 @@ var searchCmd = &cobra.Command{
 
 		versionData, err := pkg.GetPackageVersion(packageName, version)
 		if err != nil {
-			spinner.StopFailMessage("Cannot find version " + version)
+			spinner.StopFailMessage(fmt.Sprintf("Cannot find version %s", version))
 			spinner.StopFail()
 			return
 		}
@@ -72,7 +72,7 @@ var searchCmd = &cobra.Command{
 			supportsRosetta = style.Error.Render("✗")
 		}
 
-		spinner.StopMessage("Found package " + style.Pkg.Render(packageName) + ":\n")
+		spinner.StopMessage(fmt.Sprintf("Found package %s:\n", style.Pkg.Render(packageName)))
 		spinner.Stop()
 
 		// Print package information
