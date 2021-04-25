@@ -4,11 +4,11 @@ import (
 	"path"
 	"strings"
 
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/stewproject/stew/internals/config"
 	"github.com/stewproject/stew/internals/repo"
 	"github.com/stewproject/stew/util"
+	"github.com/stewproject/stew/util/style"
 	"github.com/theckman/yacspin"
 )
 
@@ -44,7 +44,7 @@ var addCmd = &cobra.Command{
 
 			// If repo already exists, but is not defined in the config
 			if _, ok := err.(repo.UndefinedRepositoryAlreadyExistsError); ok {
-				util.PrintSpinnerMsg(spinner, "Error while adding repository: "+color.RedString("Repository "+metadata.Repository.Name+"already exists, but is not defined in the config, so we're adding it."))
+				util.PrintSpinnerMsg(spinner, "Error while adding repository: "+style.Error.Render("Repository "+metadata.Repository.Name+"already exists, but is not defined in the config, so we're adding it."))
 				config.AddRepo(config.RepositoriesMetadata{
 					Name:         metadata.Repository.Name,
 					Path:         path.Join(util.RepoPath, metadata.Repository.Name),
@@ -54,14 +54,14 @@ var addCmd = &cobra.Command{
 				})
 				continue
 			} else if err != nil {
-				util.PrintSpinnerMsg(spinner, "Error while adding repository: "+color.RedString(err.Error()))
+				util.PrintSpinnerMsg(spinner, "Error while adding repository: "+style.Error.Render(err.Error()))
 				continue
 			}
 
 			addedRepos = append(addedRepos, metadata.Repository.Name)
 		}
 
-		spinner.StopMessage("Successfully added the repositories " + color.CyanString(strings.Join(addedRepos, ", ")) + ".")
+		spinner.StopMessage("Successfully added the repositories " + style.Pkg.Render(strings.Join(addedRepos, ", ")) + ".")
 		spinner.Stop()
 	},
 }

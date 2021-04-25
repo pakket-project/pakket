@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/stewproject/stew/internals/pkg"
 	"github.com/stewproject/stew/util"
+	"github.com/stewproject/stew/util/style"
 	"github.com/theckman/yacspin"
 )
 
@@ -34,11 +34,11 @@ var searchCmd = &cobra.Command{
 
 		packageName := args[0]
 
-		spinner.Message("Searching for package " + color.CyanString(packageName))
+		spinner.Message("Searching for package " + style.Pkg.Render(packageName))
 
 		pkgData, _, err := pkg.GetPackageMetadata(packageName) // Get package
 		if _, ok := err.(pkg.PackageNotFoundError); ok {
-			spinner.StopFailMessage("Cannot find package " + color.CyanString(packageName) + "\n")
+			spinner.StopFailMessage("Cannot find package " + style.Pkg.Render(packageName) + "\n")
 			spinner.StopFail()
 			return
 		} else if err != nil {
@@ -67,20 +67,19 @@ var searchCmd = &cobra.Command{
 
 		// Rosetta support icon
 		if versionData.Binaries.SupportsRosetta {
-			supportsRosetta = color.GreenString("✓")
+			supportsRosetta = style.Success.Render("✓")
 		} else {
-			supportsRosetta = color.RedString("✗")
+			supportsRosetta = style.Error.Render("✗")
 		}
 
-		spinner.StopMessage("Found package " + color.Bold(color.CyanString(packageName)) + " (" + color.MagentaString(version) + ")" + ":")
+		spinner.StopMessage("Found package " + style.Pkg.Render(packageName) + ":\n")
 		spinner.Stop()
 
 		// Print package information
-		fmt.Printf("Name: %s\n", pkgData.Package.Name)
 		fmt.Printf("Description: %s\n", pkgData.Package.Description)
 		fmt.Printf("Latest version: %s\n", pkgData.Package.Latest)
 		fmt.Printf("Available versions: %s\n", strings.Join(pkgData.Package.AvailableVersions, ", "))
-		fmt.Printf("Homepage: %s\n\n", pkgData.Package.Homepage)
+		fmt.Printf("Homepage: %s\n\n", style.Link.Render(pkgData.Package.Homepage))
 
 		// Binaries
 		if len(versionData.Binaries.Intel) > 0 || len(versionData.Binaries.Silicon) > 0 {
