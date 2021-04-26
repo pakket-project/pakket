@@ -54,16 +54,21 @@ var addCmd = &cobra.Command{
 					GitURL:       repoLink,
 					IsGit:        true,
 				})
-				continue
 			} else if err != nil {
 				util.PrintSpinnerMsg(spinner, fmt.Sprintf("Error while adding repository: %s", style.Error.Render(err.Error())))
 				continue
 			}
-
 			addedRepos = append(addedRepos, metadata.Repository.Name)
 		}
 
-		spinner.StopMessage(fmt.Sprintf("Successfully added the repositories %s.", style.Pkg.Render(strings.Join(addedRepos, ", "))))
+		if len(addedRepos) <= 0 {
+			spinner.StopFailMessage("No new repositories added.")
+			spinner.StopFail()
+		} else if len(addedRepos) == 1 {
+			spinner.StopMessage(fmt.Sprintf("Successfully added the repository %s.", style.Pkg.Render(strings.Join(addedRepos, ", "))))
+		} else {
+			spinner.StopMessage(fmt.Sprintf("Successfully added the repositories %s.", style.Pkg.Render(strings.Join(addedRepos, ", ")))) // TODO: make , white
+		}
 		spinner.Stop()
 	},
 }
