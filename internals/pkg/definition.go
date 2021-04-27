@@ -11,11 +11,10 @@ type PackageDefinition struct {
 type Package struct {
 	Name              string   `toml:"name"`
 	Description       string   `toml:"description"`
-	Latest            string   `toml:"version"`
+	Version           string   `toml:"version"`
 	License           string   `toml:"license"`
 	Homepage          string   `toml:"homepage"`
-	Url               string   `toml:"url"`
-	Sha256            string   `toml:"sha256"`
+	Head              string   `toml:"head"`
 	AvailableVersions []string `toml:"availableVersions"`
 }
 

@@ -53,7 +53,7 @@ var searchCmd = &cobra.Command{
 		if len(args) == 2 {
 			version = args[1]
 		} else {
-			version = pkgData.Package.Latest
+			version = pkgData.Package.Version
 		}
 
 		versionData, err := pkg.GetPackageVersion(packageName, version)
@@ -77,7 +77,7 @@ var searchCmd = &cobra.Command{
 
 		// Print package information
 		fmt.Printf("Description: %s\n", pkgData.Package.Description)
-		fmt.Printf("Latest version: %s\n", pkgData.Package.Latest)
+		fmt.Printf("Latest version: %s\n", pkgData.Package.Version)
 		fmt.Printf("Available versions: %s\n", strings.Join(pkgData.Package.AvailableVersions, ", "))
 		fmt.Printf("Homepage: %s\n\n", style.Link.Render(pkgData.Package.Homepage))
 
