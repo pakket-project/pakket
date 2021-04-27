@@ -83,7 +83,7 @@ func AddRepo(gitURL string) (*Metadata, error) {
 	// Get metadata
 	metadatabytes, err := os.ReadFile(path.Join(util.TempRepoPath, "metadata.toml"))
 	if err != nil {
-		util.RemoveFolder(util.TempRepoPath)
+		os.RemoveAll(util.TempRepoPath)
 		return nil, err
 	}
 	metadata := UnmarshalMetadata(metadatabytes)
@@ -93,7 +93,7 @@ func AddRepo(gitURL string) (*Metadata, error) {
 
 	// Check if already exists
 	if exists := util.DoesPathExist(repoPath); exists {
-		util.RemoveFolder(util.TempRepoPath)
+		os.RemoveAll(util.TempRepoPath)
 
 		// Check if repo is defined in config
 		for i := range config.Config.Repositories.Locations {
@@ -118,7 +118,7 @@ func AddRepo(gitURL string) (*Metadata, error) {
 		if err != nil {
 			if os.IsExist(err) {
 			} else {
-				util.RemoveFolder(util.TempRepoPath)
+				os.RemoveAll(util.TempRepoPath)
 				return metadata, err
 			}
 		}
@@ -127,7 +127,7 @@ func AddRepo(gitURL string) (*Metadata, error) {
 	// Move temp repo path to /usr/local/stew/repositories
 	err = os.Rename(util.TempRepoPath, repoPath)
 	if err != nil {
-		util.RemoveFolder(util.TempRepoPath)
+		os.RemoveAll(util.TempRepoPath)
 		return metadata, err
 	}
 

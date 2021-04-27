@@ -2,7 +2,6 @@ package util
 
 import (
 	"os"
-	"path"
 )
 
 var (
@@ -24,32 +23,4 @@ func DoesPathExist(path string) bool {
 	exists := os.IsNotExist(err)
 
 	return !exists
-}
-
-// First removes all files in the directory and then remove the directory itself.
-func RemoveFolder(dir string) error {
-	d, err := os.Open(dir)
-	if err != nil {
-		return err
-	}
-
-	defer d.Close()
-	names, err := d.Readdirnames(-1)
-	if err != nil {
-		return err
-	}
-
-	for _, name := range names {
-		err = os.RemoveAll(path.Join(dir, name))
-		if err != nil {
-			return err
-		}
-
-	}
-	err = os.Remove(dir)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
