@@ -6,14 +6,14 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"runtime"
 
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 )
 
 type (
-	Build   mg.Namespace
-	Install mg.Namespace
+	Build mg.Namespace
 )
 
 var name = "stew"
@@ -88,6 +88,10 @@ func Clean() {
 	sh.Rm("build")
 }
 
-func (Install) Intel() {
-	os.Rename("build/stew-intel", "/usr/local/bin/stew")
+func Install() {
+	if runtime.GOARCH == "arm64" {
+		os.Rename("build/stew-silicon", "/usr/local/bin/stew")
+	} else if runtime.GOARCH == "amd64" {
+		os.Rename("build/stew-intel", "/usr/local/bin/stew")
+	}
 }
