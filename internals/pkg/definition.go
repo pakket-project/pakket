@@ -38,6 +38,7 @@ type Binaries struct {
 }
 
 type VersionMetadata struct {
+	Url          string       `toml:"url"`
 	Dependencies Dependencies `toml:"dependencies"`
 	Binaries     Binaries     `toml:"binaries"`
 }
