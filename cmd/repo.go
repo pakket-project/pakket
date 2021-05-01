@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"io/fs"
+	"os"
 	"path"
 	"strings"
 
@@ -32,6 +34,22 @@ var addCmd = &cobra.Command{
 	Example: "stew repo add https://github.com/stewproject/packages https://github.com/stingalleman/stew-repository",
 	Run: func(cmd *cobra.Command, args []string) {
 		spinner, _ := yacspin.New(util.SpinnerConf)
+
+		_, err := os.Stat(util.RepoPath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				fmt.Printf("Repo path %s was not found: creating it\n ", util.RepoPath)
+				err := os.Mkdir(util.RepoPath, fs.ModeDir)
+				if err != nil {
+					fmt.Printf("failed to create %s: %s\n", util.RepoPath, style.Error.Render(err.Error()))
+					os.Exit(1)
+				}
+			} else {
+				// other stat errors
+				fmt.Printf("failed to stat %s: %s\n", util.RepoPath, style.Error.Render(err.Error()))
+				os.Exit(1)
+			}
+		}
 
 		spinner.Start()
 		spinner.Message("Adding repositories...")
