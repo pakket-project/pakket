@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/spf13/cobra"
@@ -18,12 +19,17 @@ var syncCmd = &cobra.Command{
 	Use:   "sync",
 	Short: "Pull the latest repositories",
 	Run: func(cmd *cobra.Command, args []string) {
+		numRepos := len(config.Config.Repositories.Locations)
+		if numRepos == 0 {
+			fmt.Println("You haven't added any repositories yet. Use stew repository add <repository> to add a repository first.")
+			os.Exit(1)
+		}
 		spinner, _ := yacspin.New(util.SpinnerConf)
 
 		spinner.Start()
 		spinner.Message("Syncing taps...")
 
-		for i := 0; i < len(config.Config.Repositories.Locations); i++ {
+		for i := 0; i < numRepos; i++ {
 			repo := config.Config.Repositories.Locations[i]
 
 			if !config.Config.Repositories.Locations[i].IsGit {
