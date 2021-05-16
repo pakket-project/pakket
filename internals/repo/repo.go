@@ -69,9 +69,9 @@ func UnmarshalMetadata(data []byte) *Metadata {
 }
 
 // Add repository
-func AddRepo(gitURL string) (*Metadata, error) {
+func AddRepo(gitURL string) (metadata *Metadata, err error) {
 	// Clone repository to temp dir
-	_, err := git.PlainClone(util.TempRepoPath, false, &git.CloneOptions{
+	_, err = git.PlainClone(util.TempRepoPath, false, &git.CloneOptions{
 		URL: gitURL,
 		// SingleBranch: true,
 		// Depth: 1, // TODO: cloning with depth & pulling seems broken (https://github.com/go-git/go-git/issues/305)
@@ -86,7 +86,7 @@ func AddRepo(gitURL string) (*Metadata, error) {
 		os.RemoveAll(util.TempRepoPath)
 		return nil, err
 	}
-	metadata := UnmarshalMetadata(metadatabytes)
+	metadata = UnmarshalMetadata(metadatabytes)
 
 	// Path to repo
 	repoPath := path.Join(util.RepoPath, metadata.Repository.Name)

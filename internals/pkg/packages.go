@@ -52,16 +52,11 @@ func GetPackageMetadata(packageName string) (pkgDef *PackageDefinition, pkgPath 
 	return nil, nil, PackageNotFoundError{Package: packageName}
 }
 
-func GetPackageVersion(Package string, version string) (*VersionMetadata, error) {
-	_, pkgPath, err := GetPackageMetadata(Package)
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := os.ReadFile(path.Join(*pkgPath, version, "metadata.toml"))
+func GetPackageVersion(pkgName string, pkgPath string, version string) (*VersionMetadata, error) {
+	data, err := os.ReadFile(path.Join(pkgPath, version, "metadata.toml"))
 
 	if os.IsNotExist(err) {
-		return nil, VersionNotFoundError{Package: Package, Version: version}
+		return nil, VersionNotFoundError{Package: pkgName, Version: version}
 	} else if err != nil {
 		return nil, err
 	}

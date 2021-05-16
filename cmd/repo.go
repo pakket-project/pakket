@@ -61,13 +61,16 @@ var addCmd = &cobra.Command{
 			if _, ok := err.(repo.UndefinedRepositoryAlreadyExistsError); ok {
 				util.PrintSpinnerMsg(spinner, fmt.Sprintf("Error while adding repository: %s", style.Error.Render(fmt.Sprintf("Repository %s already exists, but is not defined in the config, so Stew is adding it.", metadata.Repository.Name))))
 
-				config.AddRepo(config.RepositoriesMetadata{
+				err = config.AddRepo(config.RepositoriesMetadata{
 					Name:         metadata.Repository.Name,
 					Path:         path.Join(util.RepoPath, metadata.Repository.Name),
 					PackagesPath: metadata.Repository.PackagesPath,
 					GitURL:       repoLink,
 					IsGit:        true,
 				})
+				if err != nil {
+					panic(err)
+				}
 			} else if err != nil {
 				util.PrintSpinnerMsg(spinner, fmt.Sprintf("Error while adding repository: %s", style.Error.Render(err.Error())))
 				continue

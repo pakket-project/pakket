@@ -36,7 +36,7 @@ var searchCmd = &cobra.Command{
 
 		spinner.Message(fmt.Sprintf("Searching for package %s", style.Pkg.Render(packageName)))
 
-		pkgData, _, err := pkg.GetPackageMetadata(packageName) // Get package
+		pkgData, pkgPath, err := pkg.GetPackageMetadata(packageName) // Get package
 		if _, ok := err.(pkg.PackageNotFoundError); ok {
 			spinner.StopFailMessage(fmt.Sprintf("Cannot find package %s\n", style.Pkg.Render(packageName)))
 			spinner.StopFail()
@@ -56,7 +56,7 @@ var searchCmd = &cobra.Command{
 			version = pkgData.Package.Version
 		}
 
-		versionData, err := pkg.GetPackageVersion(packageName, version)
+		versionData, err := pkg.GetPackageVersion(packageName, *pkgPath, version)
 		if err != nil {
 			spinner.StopFailMessage(fmt.Sprintf("Cannot find version %s", version))
 			spinner.StopFail()
