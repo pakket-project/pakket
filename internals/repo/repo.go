@@ -71,7 +71,7 @@ func UnmarshalMetadata(data []byte) *Metadata {
 // Add repository
 func AddRepo(gitURL string) (metadata *Metadata, err error) {
 	// Clone repository to temp dir
-	_, err = git.PlainClone(util.TempRepoPath, false, &git.CloneOptions{
+	_, err = git.PlainClone(util.DownloadPath, false, &git.CloneOptions{
 		URL: gitURL,
 		// SingleBranch: true,
 		// Depth: 1, // TODO: cloning with depth & pulling seems broken (https://github.com/go-git/go-git/issues/305)
@@ -81,9 +81,9 @@ func AddRepo(gitURL string) (metadata *Metadata, err error) {
 	}
 
 	// Get metadata
-	metadatabytes, err := os.ReadFile(path.Join(util.TempRepoPath, "metadata.toml"))
+	metadatabytes, err := os.ReadFile(path.Join(util.DownloadPath, "metadata.toml"))
 	if err != nil {
-		os.RemoveAll(util.TempRepoPath)
+		os.RemoveAll(util.DownloadPath)
 		return nil, err
 	}
 	metadata = UnmarshalMetadata(metadatabytes)
@@ -93,7 +93,7 @@ func AddRepo(gitURL string) (metadata *Metadata, err error) {
 
 	// Check if already exists
 	if exists := util.DoesPathExist(repoPath); exists {
-		os.RemoveAll(util.TempRepoPath)
+		os.RemoveAll(util.DownloadPath)
 
 		// Check if repo is defined in config
 		for i := range config.Config.Repositories.Locations {
@@ -118,16 +118,16 @@ func AddRepo(gitURL string) (metadata *Metadata, err error) {
 		if err != nil {
 			if os.IsExist(err) {
 			} else {
-				os.RemoveAll(util.TempRepoPath)
+				os.RemoveAll(util.DownloadPath)
 				return metadata, err
 			}
 		}
 	}
 
 	// Move temp repo path to /usr/local/stew/repositories
-	err = os.Rename(util.TempRepoPath, repoPath)
+	err = os.Rename(util.DownloadPath, repoPath)
 	if err != nil {
-		os.RemoveAll(util.TempRepoPath)
+		os.RemoveAll(util.DownloadPath)
 		return metadata, err
 	}
 

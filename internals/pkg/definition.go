@@ -43,7 +43,7 @@ type VersionMetadata struct {
 	Binaries     Binaries     `toml:"binaries"`
 }
 
-// Convert data to package definition
+// Convert data to version metadata
 func ParseVersion(versionMetadata []byte) (VersionMetadata, error) {
 	var metadata VersionMetadata
 	err := toml.Unmarshal(versionMetadata, &metadata)
@@ -51,6 +51,7 @@ func ParseVersion(versionMetadata []byte) (VersionMetadata, error) {
 	return metadata, err
 }
 
+// Convert data to pkg definition
 func ParsePackage(packageDefinition []byte) (PackageDefinition, error) {
 	var def PackageDefinition
 	err := toml.Unmarshal(packageDefinition, &def)

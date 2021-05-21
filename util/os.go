@@ -15,7 +15,7 @@ var (
 	// Path to Stew repositories
 	RepoPath = path.Join(StewPath, "repositories")
 	// Path to temporary downloads/clones
-	TempRepoPath = path.Join(StewPath, "downloads")
+	DownloadPath = "/var/tmp/stew"
 )
 
 // Check if path exists
