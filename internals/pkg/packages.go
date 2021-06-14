@@ -96,7 +96,7 @@ func GetPackageMetadata(packageName string) (pkgDef *PackageDefinition, pkgPath 
 	return nil, nil, PackageNotFoundError{Package: packageName}
 }
 
-func GetPackageVersion(pkgName string, pkgPath string, version string) (*VersionMetadata, error) {
+func GetPackageVersion(pkgName, pkgPath, version string) (*VersionMetadata, error) {
 	data, err := os.ReadFile(path.Join(pkgPath, version, "metadata.toml"))
 
 	if os.IsNotExist(err) {
@@ -149,7 +149,7 @@ func DownloadPackage(url string) (tarPath string, err error) {
 	return tarPath, err
 }
 
-func InstallPackage(pkgName string, version string) (err error) {
+func InstallPackage(pkgName, version string) (err error) {
 	fmt.Println("Getting metadata...")
 	pkg, pkgPath, err := GetPackageMetadata(pkgName) // Get package metadata
 	if err != nil {
