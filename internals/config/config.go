@@ -11,6 +11,7 @@ import (
 
 type RepositoriesMetadata struct {
 	Name         string `toml:"name"`
+	Author       string `toml:"author"`
 	Path         string `toml:"path"`
 	PackagesPath string `toml:"packagesPath"`
 	GitURL       string `toml:"gitUrl"`

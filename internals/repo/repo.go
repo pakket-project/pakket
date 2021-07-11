@@ -1,11 +1,9 @@
 package repo
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path"
-	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/pelletier/go-toml"
@@ -15,6 +13,7 @@ import (
 
 type Repository struct {
 	Name         string   `toml:"name"`
+	Author       string   `toml:"author"`
 	PackagesPath string   `toml:"packagesPath"`
 	Maintainers  []string `toml:"maintainers"`
 }
@@ -69,7 +68,7 @@ func UnmarshalMetadata(data []byte) *Metadata {
 }
 
 // Add repository
-func AddRepo(gitURL string) (metadata *Metadata, err error) {
+func Add(gitURL string) (metadata *Metadata, err error) {
 	// Clone repository to temp dir
 	_, err = git.PlainClone(util.DownloadPath, false, &git.CloneOptions{
 		URL: gitURL,
@@ -89,7 +88,7 @@ func AddRepo(gitURL string) (metadata *Metadata, err error) {
 	metadata = UnmarshalMetadata(metadatabytes)
 
 	// Path to repo
-	repoPath := path.Join(util.RepoPath, metadata.Repository.Name)
+	repoPath := path.Join(util.RepoPath, fmt.Sprintf("%s/%s", metadata.Repository.Author, metadata.Repository.Name))
 
 	// Check if already exists
 	if exists := util.DoesPathExist(repoPath); exists {
@@ -106,21 +105,14 @@ func AddRepo(gitURL string) (metadata *Metadata, err error) {
 		return metadata, UndefinedRepositoryAlreadyExistsError{Repository: metadata.Repository.Name}
 	}
 
-	// Check if name contains subfolder
-	if subfolder := strings.Contains(metadata.Repository.Name, "/"); subfolder {
-		paths := strings.Split(metadata.Repository.Name, "/")
-		if len(paths) > 2 {
-			return metadata, errors.New("repository name can only contain one slash (/)")
-		}
-		// create directory
-		err = os.Mkdir(path.Join(util.RepoPath, paths[0]), 0777)
+	// create directory
+	err = os.Mkdir(path.Join(util.RepoPath, metadata.Repository.Author), 0777)
 
-		if err != nil {
-			if os.IsExist(err) {
-			} else {
-				os.RemoveAll(util.DownloadPath)
-				return metadata, err
-			}
+	if err != nil {
+		if os.IsExist(err) {
+		} else {
+			os.RemoveAll(util.DownloadPath)
+			return metadata, err
 		}
 	}
 
