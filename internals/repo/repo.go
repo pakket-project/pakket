@@ -106,7 +106,7 @@ func Add(gitURL string) (metadata *Metadata, err error) {
 	}
 
 	// create directory
-	err = os.Mkdir(path.Join(util.RepoPath, metadata.Repository.Author), 0777)
+	err = os.Mkdir(path.Join(util.RepoPath, metadata.Repository.Author), 0770)
 
 	if err != nil {
 		if os.IsExist(err) {
