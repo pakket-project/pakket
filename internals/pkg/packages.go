@@ -114,7 +114,7 @@ func GetPackageVersion(pkgName, pkgPath, version string) (*VersionMetadata, erro
 }
 
 func DownloadPackage(url string) (tarPath string, err error) {
-	err = os.MkdirAll(util.DownloadPath, 0774)
+	err = os.MkdirAll(util.DownloadPath, 0770)
 
 	// Get the data
 	resp, err := http.Get(url)
