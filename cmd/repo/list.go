@@ -13,7 +13,7 @@ var ListCmd = &cobra.Command{
 	Example: "stew repo list",
 	Run: func(cmd *cobra.Command, args []string) {
 		for _, v := range config.Config.Repositories.Locations {
-			fmt.Printf("%s\n", v.Name)
+			fmt.Printf("%s/%s\n", v.Author, v.Name)
 		}
 
 		fmt.Printf("\nTotal of %v repositories found.\n", len(config.Config.Repositories.Locations))
