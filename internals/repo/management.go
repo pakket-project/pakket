@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/stewproject/stew/internals/config"
@@ -82,3 +83,31 @@ func Add(gitURL string) (metadata *Metadata, err error) {
 	return metadata, err
 }
 
+func Delete(configIndex int) error {
+	repo := config.Config.Repositories.Locations[configIndex]
+	err := os.RemoveAll(repo.Path)
+	if err != nil {
+		return err
+	}
+
+	aPath := strings.Split("/etc/stew/repositories/stew/core", "/")
+	authorPath := strings.Join(aPath[:len(aPath)-1], "/")
+
+	empty, err := util.IsEmpty(authorPath)
+	if err != nil {
+		return err
+	}
+
+	if empty {
+		err = os.Remove(authorPath)
+		if err != nil {
+			return err
+		}
+	}
+	err = config.DelRepo(configIndex)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -84,13 +84,8 @@ func AddRepo(repoMetadata RepositoriesMetadata) error {
 }
 
 // Delete repository
-func DelRepo(repoMetadata RepositoriesMetadata) error {
-	for i := range Config.Repositories.Locations {
-		if repoMetadata == Config.Repositories.Locations[i] {
-			Config.Repositories.Locations = append(Config.Repositories.Locations[:i], Config.Repositories.Locations[i+1:]...)
-		}
-
-	}
+func DelRepo(configIndex int) error {
+	Config.Repositories.Locations = append(Config.Repositories.Locations[:configIndex], Config.Repositories.Locations[configIndex+1:]...)
 
 	config, err := toml.Marshal(&Config)
 	if err != nil {
