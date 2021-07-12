@@ -66,10 +66,8 @@ func GetConfig() ConfigStruct {
 	return Config
 }
 
-// Clone & add repository to config
+// Add repository to config
 func AddRepo(repoMetadata RepositoriesMetadata) error {
-	GetConfig()
-
 	Config.Repositories.Locations = append(Config.Repositories.Locations, repoMetadata)
 
 	config, err := toml.Marshal(&Config)
@@ -77,6 +75,32 @@ func AddRepo(repoMetadata RepositoriesMetadata) error {
 		return err
 	}
 
-	os.WriteFile(util.ConfigFile, config, 0666)
+	err = os.WriteFile(util.ConfigFile, config, 0660)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Delete repository
+func DelRepo(repoMetadata RepositoriesMetadata) error {
+	for i := range Config.Repositories.Locations {
+		if repoMetadata == Config.Repositories.Locations[i] {
+			Config.Repositories.Locations = append(Config.Repositories.Locations[:i], Config.Repositories.Locations[i+1:]...)
+		}
+
+	}
+
+	config, err := toml.Marshal(&Config)
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(util.ConfigFile, config, 0660)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
