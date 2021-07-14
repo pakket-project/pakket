@@ -30,6 +30,7 @@ func DoesPathExist(path string) bool {
 }
 
 // Get macOS version.
+// TODO: find a better way to do this
 func GetVersion() (ver string) {
 	out, err := exec.Command("sw_vers", "-productVersion").Output()
 	if err != nil {
