@@ -64,7 +64,7 @@ var AddCmd = &cobra.Command{
 				util.PrintSpinnerMsg(spinner, fmt.Sprintf("Error while adding repository: %s", style.Error.Render(err.Error())))
 				continue
 			}
-			addedRepos = append(addedRepos, metadata.Repository.Name)
+			addedRepos = append(addedRepos, fmt.Sprintf("%s/%s", metadata.Repository.Author, metadata.Repository.Name))
 		}
 
 		if len(addedRepos) <= 0 {
