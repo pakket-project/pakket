@@ -1,4 +1,4 @@
-package cmd
+package repoCmd
 
 import (
 	"fmt"
@@ -11,12 +11,8 @@ import (
 	"github.com/theckman/yacspin"
 )
 
-func init() {
-	rootCmd.AddCommand(syncCmd)
-}
-
-var syncCmd = &cobra.Command{
-	Use:   "sync",
+var SyncCmd = &cobra.Command{
+	Use:   "repo sync",
 	Short: "Pull the latest repositories",
 	Run: func(cmd *cobra.Command, args []string) {
 		numRepos := len(config.Config.Repositories.Locations)
