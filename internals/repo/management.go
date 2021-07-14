@@ -13,6 +13,8 @@ import (
 
 // Add repository
 func Add(gitURL string) (metadata *Metadata, err error) {
+	os.RemoveAll(util.DownloadPath)
+
 	// Clone repository to temp dir
 	_, err = git.PlainClone(util.DownloadPath, false, &git.CloneOptions{
 		URL: gitURL,
@@ -67,6 +69,9 @@ func Add(gitURL string) (metadata *Metadata, err error) {
 		return metadata, err
 	}
 
+	// delete temp repo
+	os.RemoveAll(util.DownloadPath)
+
 	// Add to config
 	err = config.AddRepo(config.RepositoriesMetadata{
 		Name:         metadata.Repository.Name,
@@ -90,7 +95,7 @@ func Delete(configIndex int) error {
 		return err
 	}
 
-	aPath := strings.Split("/etc/stew/repositories/stew/core", "/")
+	aPath := strings.Split(repo.Path, "/")
 	authorPath := strings.Join(aPath[:len(aPath)-1], "/")
 
 	empty, err := util.IsEmpty(authorPath)
