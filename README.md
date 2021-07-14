@@ -1,6 +1,7 @@
 # Stew
 
-The package manager for macOS you didn’t know you missed. Built with simplicity, functionality, and most importantly, speed in mind.
+The last package manager macOS will ever need.
+Built with simplicity, functionality, and speed in mind.
 
 # Installation
 
