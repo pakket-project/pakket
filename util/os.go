@@ -13,6 +13,8 @@ var (
 	StewPath = "/etc/stew"
 	// Path to main Stew config
 	ConfigFile = path.Join(StewPath, "config.toml")
+	// Path to lockfile w/ currently installed packages
+	LockfilePath = path.Join(StewPath, "lockfile.toml")
 	// Path to Stew repositories
 	RepoPath = path.Join(StewPath, "repositories")
 	// Path to temporary downloads/clones
