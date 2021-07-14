@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"fmt"
 	"os"
 	"path"
 
@@ -18,24 +17,6 @@ type Repository struct {
 
 type Metadata struct {
 	Repository Repository `toml:"repository"`
-}
-
-// Repository already exists
-type RepositoryAlreadyExistsError struct {
-	Repository string
-}
-
-func (repo RepositoryAlreadyExistsError) Error() string {
-	return fmt.Sprintf("repository %s already exists", repo.Repository)
-}
-
-// Repository already exists, not defined in config
-type UndefinedRepositoryAlreadyExistsError struct {
-	Repository string
-}
-
-func (repo UndefinedRepositoryAlreadyExistsError) Error() string {
-	return fmt.Sprintf("repository %s already exists, but is not defined in the config", repo.Repository)
 }
 
 // Get metadata of repository
