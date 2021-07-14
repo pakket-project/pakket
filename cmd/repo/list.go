@@ -13,10 +13,14 @@ var ListCmd = &cobra.Command{
 	Short:   "List all repositories.",
 	Example: "stew repo list",
 	Run: func(cmd *cobra.Command, args []string) {
-		for _, v := range config.Config.Repositories.Locations {
-			fmt.Printf("%s/%s\n", style.Repo.Render(v.Author), style.Repo.Render(v.Name))
-		}
+		if len(config.Config.Repositories.Locations) > 0 {
+			for _, v := range config.Config.Repositories.Locations {
+				fmt.Printf("%s/%s (%s)\n", style.Repo.Render(v.Author), style.Repo.Render(v.Name), style.Link.Render(v.GitURL))
+			}
 
-		fmt.Printf("\nTotal of %v repositories found.\n", len(config.Config.Repositories.Locations))
+			fmt.Printf("\nTotal of %v repositories found.\n", len(config.Config.Repositories.Locations))
+		} else {
+			fmt.Println("No repositories found. Add the core repository: \"stew repo add https://github.com/stewproject/packages\"")
+		}
 	},
 }
