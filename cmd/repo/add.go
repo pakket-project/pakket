@@ -71,9 +71,9 @@ var AddCmd = &cobra.Command{
 			spinner.StopFailMessage("No new repositories added.")
 			spinner.StopFail()
 		} else if len(addedRepos) == 1 {
-			spinner.StopMessage(fmt.Sprintf("Successfully added the repository %s.", style.Pkg.Render(strings.Join(addedRepos, ", "))))
+			spinner.StopMessage(fmt.Sprintf("Successfully added the repository %s.", style.Repo.Render(strings.Join(addedRepos, ", "))))
 		} else {
-			spinner.StopMessage(fmt.Sprintf("Successfully added the repositories %s.", style.Pkg.Render(strings.Join(addedRepos, ", ")))) // TODO: make , white
+			spinner.StopMessage(fmt.Sprintf("Successfully added the repositories %s.", style.Repo.Render(strings.Join(addedRepos, ", ")))) // TODO: make , white
 		}
 		spinner.Stop()
 	},

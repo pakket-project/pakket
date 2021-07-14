@@ -7,6 +7,10 @@ var (
 		Bold(true).
 		Foreground(lipgloss.Color("12"))
 
+	Repo = lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("12"))
+
 	// Version = lipgloss.NewStyle().
 	// 	Foreground(lipgloss.Color("198"))
 

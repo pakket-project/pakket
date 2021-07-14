@@ -14,7 +14,7 @@ import (
 
 var DeleteCmd = &cobra.Command{
 	Use:     "delete name/repo",
-	Short:   "Delete a repository.",
+	Short:   "Delete a repository",
 	Example: "stew repo delete stew/core",
 	Args:    cobra.ExactArgs(1),
 	// validate args
@@ -36,7 +36,7 @@ var DeleteCmd = &cobra.Command{
 			if v.Author == author && v.Name == name {
 				foundRepo = true
 
-				if confirm := util.DestructiveConfirm(fmt.Sprintf("Do you really want to delete the repository %s/%s?", style.Pkg.Render(v.Author), style.Pkg.Render(v.Name))); confirm {
+				if confirm := util.DestructiveConfirm(fmt.Sprintf("Do you really want to delete the repository %s/%s?", style.Repo.Render(v.Author), style.Repo.Render(v.Name))); confirm {
 					fmt.Printf("Deleted %s/%s.\n", v.Author, v.Name)
 					err := repo.Delete(i)
 					if err != nil {
