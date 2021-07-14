@@ -8,15 +8,15 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/stewproject/stew/internals/config"
 	"github.com/stewproject/stew/internals/repo"
+	"github.com/stewproject/stew/util"
+	"github.com/stewproject/stew/util/style"
 )
-
-var ()
 
 var DeleteCmd = &cobra.Command{
 	Use:     "delete name/repo",
 	Short:   "Delete a repository.",
 	Example: "stew repo delete stew/core",
-	Args:    cobra.MinimumNArgs(1),
+	Args:    cobra.ExactArgs(1),
 	// validate args
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		for i := range args {
@@ -28,17 +28,20 @@ var DeleteCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		var foundRepo bool
-		for i := range args {
-			splittedArgs := strings.Split(args[i], "/")
-			author := splittedArgs[0]
-			name := splittedArgs[1]
+		splittedArgs := strings.Split(args[0], "/")
+		author := splittedArgs[0]
+		name := splittedArgs[1]
 
-			for i, v := range config.Config.Repositories.Locations {
-				if v.Author == author && v.Name == name {
-					foundRepo = true
+		for i, v := range config.Config.Repositories.Locations {
+			if v.Author == author && v.Name == name {
+				foundRepo = true
+
+				if confirm := util.DestructiveConfirm(fmt.Sprintf("Do you really want to delete the repository %s/%s?", style.Pkg.Render(v.Author), style.Pkg.Render(v.Name))); confirm {
+					fmt.Printf("Deleted %s/%s.\n", v.Author, v.Name)
 					err := repo.Delete(i)
 					if err != nil {
 						panic(err)
+
 					}
 				}
 			}
