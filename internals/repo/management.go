@@ -25,6 +25,11 @@ func Add(gitURL string) (metadata *Metadata, err error) {
 		return nil, err
 	}
 
+	// Check if repository is valid Stew repository
+	if exists := util.DoesPathExist(path.Join(util.DownloadPath, "metadata.toml")); !exists {
+		return nil, UnvalidRepository{GitLink: gitURL}
+	}
+
 	// Get metadata
 	metadatabytes, err := os.ReadFile(path.Join(util.DownloadPath, "metadata.toml"))
 	if err != nil {
