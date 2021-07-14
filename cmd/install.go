@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/stewproject/stew/internals/pkg"
 	"github.com/stewproject/stew/util"
-	"github.com/theckman/yacspin"
 )
 
 func init() {
@@ -25,9 +24,6 @@ var installCmd = &cobra.Command{
 	Args:    cobra.MinimumNArgs(1),
 	Example: "stew install golang wget python@3.9",
 	Run: func(cmd *cobra.Command, args []string) {
-		spinner, _ := yacspin.New(util.SpinnerConf)
-		spinner.Start()
-
 		for _, v := range args {
 			p := strings.Split(v, "@")
 			if len(p) == 1 {
@@ -35,15 +31,30 @@ var installCmd = &cobra.Command{
 			}
 			pkgName := p[0]
 			ver := p[1]
-
-			spinner.Message(fmt.Sprintf("Installing %s (%s)", pkgName, ver))
-			err := pkg.InstallPackage(pkgName, ver)
-			if _, ok := err.(pkg.PackageNotFoundError); ok {
-				errors = append(errors, err)
+			pkgDef, pkgPath, err := pkg.GetPackageMetadata(pkgName)
+			if err != nil {
+				panic(err)
+			}
+			vers, err := pkg.GetPackageVersion(pkgName, *pkgPath, pkgDef.Package.Version)
+			if err != nil {
+				panic(err)
+			}
+			binary := pkg.GetBinaryMetadata(*vers)
+			size, err := pkg.GetPackageSize(binary)
+			if err != nil {
+				panic(err)
+			}
+			if confirm := util.Confirm(fmt.Sprintf("Continue? %s", util.ByteToString(size))); confirm {
+				err := pkg.InstallPackage(pkgName, ver)
+				if _, ok := err.(pkg.PackageNotFoundError); ok {
+					errors = append(errors, err)
+				}
 			}
 		}
-		fmt.Println(errors)
-		spinner.StopMessage(fmt.Sprintf("Succesfully installed %s", strings.Join(args, ", ")))
-		spinner.Stop()
+		if len(errors) > 0 {
+			fmt.Println(errors)
+		}
+
+		fmt.Printf("installed %s\n", strings.Join(args, ", "))
 	},
 }
