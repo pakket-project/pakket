@@ -87,28 +87,7 @@ func DownloadPackage(url string) (tarPath string, err error) {
 	return tarPath, err
 }
 
-func InstallPackage(pkgName, version string) (err error) {
-	pkg, pkgPath, err := GetPackageMetadata(pkgName) // Get package metadata
-	if err != nil {
-		return err
-	}
-
-	// Get package version metadata
-	var ver *VersionMetadata
-	if version == "latest" {
-		ver, err = GetPackageVersion(pkgName, *pkgPath, pkg.Package.Version)
-		if err != nil {
-			return err
-		}
-	} else {
-		ver, err = GetPackageVersion(pkgName, *pkgPath, version)
-		if err != nil {
-			return err
-		}
-	}
-
-	binary := GetBinaryMetadata(*ver)
-
+func InstallPackage(pkg PackageDefinition, binary BinaryMetadata) (err error) {
 	tarPath, err := DownloadPackage(binary.Url) // Download package, save tar to tarPath
 	if err != nil {
 		return err

@@ -14,7 +14,10 @@ func init() {
 }
 
 var (
-	errors []error
+	pkgsToInstall []pkg.PkgData
+	pkgs          []string
+	// errors        []error
+	totalSize int64
 )
 
 // repo add
@@ -29,32 +32,30 @@ var installCmd = &cobra.Command{
 			if len(p) == 1 {
 				p = append(p, "latest")
 			}
-			pkgName := p[0]
-			ver := p[1]
-			pkgDef, pkgPath, err := pkg.GetPackageMetadata(pkgName)
+			pkgName := p[0] // package name
+			version := p[1] // version
+
+			pkgData, err := pkg.GetPackage(pkgName, version)
 			if err != nil {
 				panic(err)
 			}
-			vers, err := pkg.GetPackageVersion(pkgName, *pkgPath, pkgDef.Package.Version)
-			if err != nil {
-				panic(err)
-			}
-			binary := pkg.GetBinaryMetadata(*vers)
-			size, err := pkg.GetPackageSize(binary)
-			if err != nil {
-				panic(err)
-			}
-			if confirm := util.Confirm(fmt.Sprintf("Continue? %s", util.ByteToString(size))); confirm {
-				err := pkg.InstallPackage(pkgName, ver)
-				if _, ok := err.(pkg.PackageNotFoundError); ok {
-					errors = append(errors, err)
+
+			pkgs = append(pkgs, fmt.Sprintf("%s-%s", pkgData.PkgDef.Package.Name, pkgData.Version))
+			pkgsToInstall = append(pkgsToInstall, pkgData)
+			totalSize += pkgData.BinSize
+		}
+
+		fmt.Printf("Packages: %s (%d)\n", strings.Join(pkgs, ", "), len(pkgs))
+		fmt.Printf("Total download size: %s\n", util.ByteToString(totalSize))
+		if confirm := util.Confirm("\nDo you want to continue?"); confirm {
+			for _, v := range pkgsToInstall {
+				err := pkg.InstallPackage(v.PkgDef, v.BinData)
+				if err != nil {
+					fmt.Printf("Error: %s\n", err.Error())
+				} else {
+					fmt.Printf("Installed %s", v.PkgDef.Package.Name)
 				}
 			}
 		}
-		if len(errors) > 0 {
-			fmt.Println(errors)
-		}
-
-		fmt.Printf("installed %s\n", strings.Join(args, ", "))
 	},
 }

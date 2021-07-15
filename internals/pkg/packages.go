@@ -12,6 +12,44 @@ import (
 	"github.com/stewproject/stew/util"
 )
 
+// for use with GetPackage()
+type PkgData struct {
+	PkgDef  PackageDefinition
+	PkgPath string
+	VerData VersionMetadata
+	Version string
+	BinData BinaryMetadata
+	BinSize int64
+}
+
+// One function to get all information needed to install a package. Version should be "latest" for latest version. binSize is the size of the tarball in bytes.
+func GetPackage(pkgName string, pkgVer string) (PkgData, error) {
+	pkgDef, pkgPath, err := GetPackageMetadata(pkgName) // get package metadata
+	if err != nil {
+		return PkgData{BinSize: 0}, err
+	}
+
+	var version string
+	if pkgVer == "latest" {
+		version = pkgDef.Package.Version
+	} else {
+		version = pkgVer
+	}
+
+	verData, err := GetPackageVersion(pkgName, *pkgPath, version)
+	if err != nil {
+		return PkgData{PkgDef: *pkgDef, PkgPath: *pkgPath, BinSize: 0}, err
+	}
+
+	binData := GetBinaryMetadata(*verData)
+	binSize, err := GetPackageSize(*binData)
+	if err != nil {
+		return PkgData{PkgDef: *pkgDef, PkgPath: *pkgPath, VerData: *verData, BinData: *binData, BinSize: 0}, err
+	}
+
+	return PkgData{PkgDef: *pkgDef, PkgPath: *pkgPath, VerData: *verData, Version: version, BinData: *binData, BinSize: binSize}, err
+}
+
 // Search all repositories for specific package
 func GetPackageMetadata(packageName string) (pkgDef *PackageDefinition, pkgPath *string, err error) {
 	for i := 0; i < len(config.Config.Repositories.Locations); i++ {
@@ -55,7 +93,7 @@ func GetPackageVersion(pkgName, pkgPath, version string) (*VersionMetadata, erro
 	return &metadata, nil
 }
 
-func GetBinaryMetadata(ver VersionMetadata) (binary BinaryMetadata) {
+func GetBinaryMetadata(ver VersionMetadata) (binary *BinaryMetadata) {
 	macVer := util.GetVersion() // Get macOS version
 
 	// Get binary information
@@ -63,7 +101,7 @@ func GetBinaryMetadata(ver VersionMetadata) (binary BinaryMetadata) {
 		for _, b := range ver.Binaries.Silicon {
 			for _, v := range b.SupportedVersions {
 				if v == macVer || v == "all" {
-					binary = b
+					binary = &b
 				}
 			}
 		}
@@ -71,7 +109,7 @@ func GetBinaryMetadata(ver VersionMetadata) (binary BinaryMetadata) {
 		for _, b := range ver.Binaries.Intel {
 			for _, v := range b.SupportedVersions {
 				if v == macVer || v == "all" {
-					binary = b
+					binary = &b
 				}
 			}
 		}
