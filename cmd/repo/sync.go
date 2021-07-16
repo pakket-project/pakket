@@ -12,7 +12,7 @@ import (
 )
 
 var SyncCmd = &cobra.Command{
-	Use:   "repo sync",
+	Use:   "sync",
 	Short: "Pull the latest repositories",
 	Run: func(cmd *cobra.Command, args []string) {
 		numRepos := len(config.Config.Repositories.Locations)
