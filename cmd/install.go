@@ -11,6 +11,7 @@ import (
 
 func init() {
 	rootCmd.AddCommand(installCmd)
+	installCmd.Flags().BoolVarP(&yes, "yes", "y", false, "skips all confirmation prompts")
 }
 
 var (
@@ -18,6 +19,7 @@ var (
 	pkgs          []string
 	// errors        []error
 	totalSize int64
+	yes       bool
 )
 
 // repo add
@@ -47,7 +49,12 @@ var installCmd = &cobra.Command{
 
 		fmt.Printf("Packages: %s (%d)\n", strings.Join(pkgs, ", "), len(pkgs))
 		fmt.Printf("Total download size: %s\n", util.ByteToString(totalSize))
-		if confirm := util.Confirm("\nDo you want to continue?"); confirm {
+
+		if !yes {
+			yes = util.Confirm("\nDo you want to continue?")
+		}
+
+		if yes {
 			for _, v := range pkgsToInstall {
 				err := pkg.InstallPackage(v.PkgDef, v.BinData)
 				if err != nil {
