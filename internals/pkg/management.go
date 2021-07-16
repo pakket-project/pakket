@@ -33,21 +33,22 @@ var (
 var (
 	locations = map[string]string{
 		// Binaries
-		"/bin": "/usr/local/bin",
+		"/bin":   "/usr/local/bin",
+		"/share": "/usr/local/share",
 		// Completions
 		// "/completions/fish": "",
 		// "/completions/zsh":  "/usr/share/zsh/5.3/functions",
 		// Manuals
-		"/man/man1": "/usr/local/share/man/man1",
-		"/man/man2": "/usr/local/share/man/man2",
-		"/man/man3": "/usr/local/share/man/man3",
-		"/man/man4": "/usr/local/share/man/man4",
-		"/man/man5": "/usr/local/share/man/man5",
-		"/man/man6": "/usr/local/share/man/man6",
-		"/man/man7": "/usr/local/share/man/man7",
-		"/man/man8": "/usr/local/share/man/man8",
-		"/man/man9": "/usr/local/share/man/man9",
-		"/man/mann": "/usr/local/share/man/mann",
+		// "/man/man1": "/usr/local/share/man/man1",
+		// "/man/man2": "/usr/local/share/man/man2",
+		// "/man/man3": "/usr/local/share/man/man3",
+		// "/man/man4": "/usr/local/share/man/man4",
+		// "/man/man5": "/usr/local/share/man/man5",
+		// "/man/man6": "/usr/local/share/man/man6",
+		// "/man/man7": "/usr/local/share/man/man7",
+		// "/man/man8": "/usr/local/share/man/man8",
+		// "/man/man9": "/usr/local/share/man/man9",
+		// "/man/mann": "/usr/local/share/man/mann",
 	}
 )
 
