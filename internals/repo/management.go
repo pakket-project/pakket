@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/stewproject/stew/internals/config"
@@ -100,8 +99,7 @@ func Delete(configIndex int) error {
 		return err
 	}
 
-	aPath := strings.Split(repo.Path, "/")
-	authorPath := strings.Join(aPath[:len(aPath)-1], "/")
+	authorPath := path.Dir(repo.Path)
 
 	empty, err := util.IsEmpty(authorPath)
 	if err != nil {
