@@ -109,22 +109,39 @@ func InstallPackage(pkg PackageDefinition, binary BinaryMetadata) (err error) {
 	filesToMove := make(map[string]string)
 
 	err = filepath.Walk(savePath, func(filePath string, f os.FileInfo, err error) error {
-		if !f.IsDir() || filePath == savePath {
+		if filePath == savePath {
 			return err
 		}
 
-		localpath := strings.ReplaceAll(filePath, path.Join(savePath, pkg.Package.Name), "")
+		localPath := strings.ReplaceAll(filePath, path.Join(savePath, pkg.Package.Name), "")
 
-		if localpath == "" || localpath == "info.toml" {
+		if localPath == "" || localPath == "/info.toml" {
 			return err
 		}
-		if finalPath, ok := locations[localpath]; ok {
+
+		// if file is in /share directory
+		if strings.Split(localPath, "/")[1] == "share" {
+			if f.IsDir() {
+				return err
+			}
+
+			filesToMove[filePath] = path.Join("/", "usr", "local", localPath)
+			return err
+		}
+
+		// if path is a file, return
+		if !f.IsDir() {
+			return err
+		}
+
+		if finalPath, ok := locations[localPath]; ok {
 			err = filepath.Walk(filePath, func(secondPath string, f os.FileInfo, err error) error {
 				if secondPath == filePath {
 					return err
 				}
 
 				filesToMove[secondPath] = path.Join(finalPath, f.Name())
+
 				return err
 			})
 			if err != nil {
@@ -138,9 +155,28 @@ func InstallPackage(pkg PackageDefinition, binary BinaryMetadata) (err error) {
 	}
 
 	for oldPath, newPath := range filesToMove {
-		err := os.Rename(oldPath, newPath)
-		if err != nil {
-			return err
+		var exists bool
+		var confirm bool
+
+		exists = util.DoesPathExist(newPath)
+		if exists {
+			confirm = util.DestructiveConfirm(fmt.Sprintf("File %s already exists. Overwrite?", newPath))
+			err := os.Remove(newPath)
+			if err != nil {
+				return err
+			}
+		}
+
+		if (!exists) || (exists && confirm) {
+			err = os.MkdirAll(path.Dir(newPath), 0755)
+			if err != nil {
+				return err
+			}
+
+			err = os.Rename(oldPath, newPath)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
