@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/mholt/archiver/v3"
+	"github.com/stewproject/stew/internals/config"
 	"github.com/stewproject/stew/util"
 )
 
@@ -88,14 +89,14 @@ func DownloadPackage(url string) (tarPath string, err error) {
 	return tarPath, err
 }
 
-func InstallPackage(pkg PackageDefinition, binary BinaryMetadata) (err error) {
-	tarPath, err := DownloadPackage(binary.Url) // Download package, save tar to tarPath
+func InstallPackage(pkg PkgData) (err error) {
+	tarPath, err := DownloadPackage(pkg.BinData.Url) // Download package, save tar to tarPath
 	if err != nil {
 		return err
 	}
 
 	// Unarchive tarball
-	savePath := path.Join(util.DownloadPath, pkg.Package.Name)
+	savePath := path.Join(util.DownloadPath, pkg.PkgDef.Package.Name)
 	err = archiver.Unarchive(tarPath, savePath)
 	if err != nil {
 		return err
@@ -113,7 +114,7 @@ func InstallPackage(pkg PackageDefinition, binary BinaryMetadata) (err error) {
 			return err
 		}
 
-		localPath := strings.ReplaceAll(filePath, path.Join(savePath, pkg.Package.Name), "")
+		localPath := strings.ReplaceAll(filePath, path.Join(savePath, pkg.PkgDef.Package.Name), "")
 
 		if localPath == "" || localPath == "/info.toml" {
 			return err
@@ -178,6 +179,12 @@ func InstallPackage(pkg PackageDefinition, binary BinaryMetadata) (err error) {
 				return err
 			}
 		}
+	}
+
+	// add to lockfile
+	err = config.AddPkgToLockfile(config.LockfileMetadata{Name: pkg.PkgDef.Package.Name, Version: pkg.Version, Sha256: pkg.BinData.Sha256, Repository: pkg.Repository})
+	if err != nil {
+		return err
 	}
 
 	return nil

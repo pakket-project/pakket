@@ -28,7 +28,8 @@ type ConfigStruct struct {
 
 var (
 	// Loaded config
-	Config ConfigStruct
+	Config   ConfigStruct
+	LockFile LockfileStruct
 )
 
 // Get main Stew config
