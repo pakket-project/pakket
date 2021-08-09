@@ -56,7 +56,7 @@ var installCmd = &cobra.Command{
 
 		if yes {
 			for _, v := range pkgsToInstall {
-				err := pkg.InstallPackage(v.PkgDef, v.BinData)
+				err := pkg.InstallPackage(v)
 				if err != nil {
 					fmt.Printf("Error: %s\n", err.Error())
 				} else {

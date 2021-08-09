@@ -36,7 +36,7 @@ var searchCmd = &cobra.Command{
 
 		spinner.Message(fmt.Sprintf("Searching for package %s", style.Pkg.Render(packageName)))
 
-		pkgData, pkgPath, err := pkg.GetPackageMetadata(packageName) // Get package
+		pkgData, pkgPath, repo, err := pkg.GetPackageMetadata(packageName) // Get package
 		if _, ok := err.(pkg.PackageNotFoundError); ok {
 			spinner.StopFailMessage(fmt.Sprintf("Cannot find package %s\n", style.Pkg.Render(packageName)))
 			spinner.StopFail()
@@ -79,6 +79,7 @@ var searchCmd = &cobra.Command{
 		fmt.Printf("Description: %s\n", pkgData.Package.Description)
 		fmt.Printf("Latest version: %s\n", pkgData.Package.Version)
 		fmt.Printf("Available versions: %s\n", strings.Join(pkgData.Package.AvailableVersions, ", "))
+		fmt.Printf("Repository: %s\n", style.Repo.Render(repo))
 		fmt.Printf("Homepage: %s\n\n", style.Link.Render(pkgData.Package.Homepage))
 
 		// Binaries

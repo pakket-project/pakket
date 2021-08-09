@@ -12,19 +12,20 @@ import (
 	"github.com/stewproject/stew/util"
 )
 
-// for use with GetPackage()
+// for use with GetPackage(). Contains all data needed to install a package.
 type PkgData struct {
-	PkgDef  PackageDefinition
-	PkgPath string
-	VerData VersionMetadata
-	Version string
-	BinData BinaryMetadata
-	BinSize int64
+	PkgDef     PackageDefinition
+	PkgPath    string
+	VerData    VersionMetadata
+	Version    string
+	BinData    BinaryMetadata
+	BinSize    int64
+	Repository string
 }
 
 // One function to get all information needed to install a package. Version should be "latest" for latest version. binSize is the size of the tarball in bytes.
 func GetPackage(pkgName string, pkgVer string) (PkgData, error) {
-	pkgDef, pkgPath, err := GetPackageMetadata(pkgName) // get package metadata
+	pkgDef, pkgPath, repo, err := GetPackageMetadata(pkgName) // get package metadata
 	if err != nil {
 		return PkgData{BinSize: 0}, err
 	}
@@ -38,22 +39,23 @@ func GetPackage(pkgName string, pkgVer string) (PkgData, error) {
 
 	verData, err := GetPackageVersion(pkgName, *pkgPath, version)
 	if err != nil {
-		return PkgData{PkgDef: *pkgDef, PkgPath: *pkgPath, BinSize: 0}, err
+		return PkgData{PkgDef: *pkgDef, PkgPath: *pkgPath, BinSize: 0, Repository: repo}, err
 	}
 
 	binData := GetBinaryMetadata(*verData)
 	binSize, err := GetPackageSize(*binData)
 	if err != nil {
-		return PkgData{PkgDef: *pkgDef, PkgPath: *pkgPath, VerData: *verData, BinData: *binData, BinSize: 0}, err
+		return PkgData{PkgDef: *pkgDef, PkgPath: *pkgPath, VerData: *verData, BinData: *binData, BinSize: 0, Repository: repo}, err
 	}
 
-	return PkgData{PkgDef: *pkgDef, PkgPath: *pkgPath, VerData: *verData, Version: version, BinData: *binData, BinSize: binSize}, err
+	return PkgData{PkgDef: *pkgDef, PkgPath: *pkgPath, VerData: *verData, Version: version, BinData: *binData, BinSize: binSize, Repository: repo}, err
 }
 
 // Search all repositories for specific package
-func GetPackageMetadata(packageName string) (pkgDef *PackageDefinition, pkgPath *string, err error) {
+func GetPackageMetadata(packageName string) (pkgDef *PackageDefinition, pkgPath *string, repository string, err error) {
 	for i := 0; i < len(config.Config.Repositories.Locations); i++ {
 		repo := config.Config.Repositories.Locations[i]
+		repository = fmt.Sprintf("%s/%s", repo.Author, repo.Name)
 		packagePath := path.Join(repo.Path, repo.PackagesPath, packageName)
 
 		if exists := util.DoesPathExist(packagePath); !exists {
@@ -62,18 +64,18 @@ func GetPackageMetadata(packageName string) (pkgDef *PackageDefinition, pkgPath 
 
 		data, err := os.ReadFile(path.Join(packagePath, "package.toml"))
 		if err != nil {
-			return nil, &packagePath, err
+			return nil, &packagePath, repository, err
 		}
 
 		def, err := ParsePackage(data)
 		if err != nil {
-			return &def, &packagePath, err
+			return &def, &packagePath, repository, err
 		}
 
-		return &def, &packagePath, nil
+		return &def, &packagePath, repository, nil
 	}
 
-	return nil, nil, PackageNotFoundError{Package: packageName}
+	return nil, nil, repository, PackageNotFoundError{Package: packageName}
 }
 
 func GetPackageVersion(pkgName, pkgPath, version string) (*VersionMetadata, error) {
