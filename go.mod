@@ -3,6 +3,7 @@ module github.com/stewproject/stew
 go 1.16
 
 require (
+	github.com/cavaliercoder/grab v2.0.0+incompatible // indirect
 	github.com/charmbracelet/lipgloss v0.2.0
 	github.com/go-git/go-git/v5 v5.3.0
 	github.com/magefile/mage v1.11.0 // indirect

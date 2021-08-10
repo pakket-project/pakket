@@ -2,14 +2,12 @@ package pkg
 
 import (
 	"fmt"
-	"io"
-	"mime"
-	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
+	"github.com/cavaliercoder/grab"
 	"github.com/mholt/archiver/v3"
 	"github.com/stewproject/stew/internals/config"
 	"github.com/stewproject/stew/util"
@@ -53,56 +51,33 @@ var (
 	}
 )
 
-func DownloadPackage(url string) (tarPath string, err error) {
+// download and unarchive package
+func DownloadPackage(url string, savePath string) (err error) {
 	err = os.MkdirAll(util.DownloadPath, 0770)
-
-	// Get the data
-	resp, err := http.Get(url)
 	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	// Check server response
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("bad status: %s", resp.Status)
+		return
 	}
 
-	_, params, err := mime.ParseMediaType(resp.Header.Get("Content-Disposition"))
+	// Download tar
+	resp, err := grab.Get(util.DownloadPath, url)
+	defer os.RemoveAll(resp.Filename)
 	if err != nil {
-		return "", err
-	}
-	tarPath = path.Join(util.DownloadPath, params["filename"])
-	// Create the file
-	out, err := os.Create(tarPath)
-	if err != nil {
-		return "", err
-	}
-	defer out.Close()
-
-	// Writer the body to file
-	_, err = io.Copy(out, resp.Body)
-	if err != nil {
-		return "", err
+		return
 	}
 
-	return tarPath, err
+	err = archiver.Unarchive(resp.Filename, savePath)
+	if err != nil {
+		return
+	}
+
+	return err
 }
 
 func InstallPackage(pkg PkgData) (err error) {
-	tarPath, err := DownloadPackage(pkg.BinData.Url) // Download package, save tar to tarPath
-	if err != nil {
-		return err
-	}
-
-	// Unarchive tarball
 	savePath := path.Join(util.DownloadPath, pkg.PkgDef.Package.Name)
-	err = archiver.Unarchive(tarPath, savePath)
-	if err != nil {
-		return err
-	}
+
+	err = DownloadPackage(pkg.BinData.Url, savePath) // Download package, save tar to tarPath
 	defer os.RemoveAll(savePath)
-	err = os.RemoveAll(tarPath)
 	if err != nil {
 		return err
 	}
