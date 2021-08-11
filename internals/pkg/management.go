@@ -1,6 +1,8 @@
 package pkg
 
 import (
+	sha "crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"path"
@@ -51,20 +53,35 @@ var (
 	}
 )
 
-// download and unarchive package
-func DownloadPackage(url string, savePath string) (err error) {
+// download and unarchive package.
+func DownloadPackage(pkg PkgData, savePath string) (err error) {
 	err = os.MkdirAll(util.DownloadPath, 0770)
 	if err != nil {
 		return
 	}
 
 	// Download tar
-	resp, err := grab.Get(util.DownloadPath, url)
+	resp, err := grab.Get(util.DownloadPath, pkg.BinData.Url)
 	defer os.RemoveAll(resp.Filename)
 	if err != nil {
 		return
 	}
 
+	fileData, err := os.ReadFile(resp.Filename)
+	if err != nil {
+		return err
+	}
+
+	hashBytes := sha.Sum256(fileData)
+	downloadHash := hex.EncodeToString(hashBytes[:])
+
+	if downloadHash != pkg.BinData.Sha256 {
+		return InvalidHash{
+			Repository: pkg.Repository,
+		}
+	}
+
+	// unarchive
 	err = archiver.Unarchive(resp.Filename, savePath)
 	if err != nil {
 		return
@@ -76,7 +93,7 @@ func DownloadPackage(url string, savePath string) (err error) {
 func InstallPackage(pkg PkgData) (err error) {
 	savePath := path.Join(util.DownloadPath, pkg.PkgDef.Package.Name)
 
-	err = DownloadPackage(pkg.BinData.Url, savePath) // Download package, save tar to tarPath
+	err = DownloadPackage(pkg, savePath) // Download package, save tar to tarPath
 	defer os.RemoveAll(savePath)
 	if err != nil {
 		return err

@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/stewproject/stew/internals/pkg"
 	"github.com/stewproject/stew/util"
+	"github.com/stewproject/stew/util/style"
 )
 
 func init() {
@@ -58,9 +59,9 @@ var installCmd = &cobra.Command{
 			for _, v := range pkgsToInstall {
 				err := pkg.InstallPackage(v)
 				if err != nil {
-					fmt.Printf("Error: %s\n", err.Error())
+					fmt.Printf("\n%s: %s\n", style.Error.Render("Error"), err.Error())
 				} else {
-					fmt.Printf("Installed %s", v.PkgDef.Package.Name)
+					fmt.Printf("\nInstalled %s", v.PkgDef.Package.Name)
 				}
 			}
 		}
