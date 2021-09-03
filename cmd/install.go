@@ -45,7 +45,7 @@ var installCmd = &cobra.Command{
 
 			pkgs = append(pkgs, fmt.Sprintf("%s-%s", pkgData.PkgDef.Package.Name, pkgData.Version))
 			pkgsToInstall = append(pkgsToInstall, pkgData)
-			totalSize += pkgData.BinSize
+			// totalSize += pkgData.BinSize
 		}
 
 		fmt.Printf("Packages: %s (%d)\n", strings.Join(pkgs, ", "), len(pkgs))

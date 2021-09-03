@@ -61,7 +61,7 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 	}
 
 	// Download tar
-	resp, err := grab.Get(util.DownloadPath, pkg.BinData.Url)
+	resp, err := grab.Get(util.DownloadPath, pkg.PkgUrl)
 	defer os.RemoveAll(resp.Filename)
 	if err != nil {
 		return
@@ -75,7 +75,7 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 	hashBytes := sha.Sum256(fileData)
 	downloadHash := hex.EncodeToString(hashBytes[:])
 
-	if downloadHash != pkg.BinData.Sha256 {
+	if downloadHash != pkg.PlfData.hash {
 		return InvalidHash{
 			Repository: pkg.Repository,
 		}
@@ -174,7 +174,7 @@ func InstallPackage(pkg PkgData) (err error) {
 	}
 
 	// add to lockfile
-	err = config.AddPkgToLockfile(config.LockfileMetadata{Name: pkg.PkgDef.Package.Name, Version: pkg.Version, Sha256: pkg.BinData.Sha256, Repository: pkg.Repository})
+	err = config.AddPkgToLockfile(config.LockfileMetadata{Name: pkg.PkgDef.Package.Name, Version: pkg.Version, Sha256: pkg.PlfData.hash, Repository: pkg.Repository})
 	if err != nil {
 		return err
 	}

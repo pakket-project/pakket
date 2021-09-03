@@ -63,14 +63,13 @@ var searchCmd = &cobra.Command{
 			return
 		}
 
-		var supportsRosetta string
-
+		// TODO
 		// Rosetta support icon
-		if versionData.Binaries.SupportsRosetta {
-			supportsRosetta = style.Success.Render("✓")
-		} else {
-			supportsRosetta = style.Error.Render("✗")
-		}
+		// if versionData.Binaries.SupportsRosetta {
+		// 	supportsRosetta = style.Success.Render("✓")
+		// } else {
+		// 	supportsRosetta = style.Error.Render("✗")
+		// }
 
 		spinner.StopMessage(fmt.Sprintf("Found package %s:\n", style.Pkg.Render(packageName)))
 		spinner.Stop()
@@ -82,15 +81,16 @@ var searchCmd = &cobra.Command{
 		fmt.Printf("Repository: %s\n", style.Repo.Render(repo))
 		fmt.Printf("Homepage: %s\n\n", style.Link.Render(pkgData.Package.Homepage))
 
+		// TODO
 		// Binaries
-		if len(versionData.Binaries.Intel) > 0 || len(versionData.Binaries.Silicon) > 0 {
-			fmt.Println("This package has Intel & Silicon binaries available")
-		} else if len(versionData.Binaries.Silicon) > 0 {
-			fmt.Println("This package has Silicon binaries available")
-		} else {
-			fmt.Println("This package has Intel binaries available")
-			fmt.Printf("Rosetta support: %s\n", supportsRosetta)
-		}
+		// if len(versionData.Binaries.Intel) > 0 || len(versionData.Binaries.Silicon) > 0 {
+		// 	fmt.Println("This package has Intel & Silicon binaries available")
+		// } else if versionData.Silicon {
+		// 	fmt.Println("This package has Silicon binaries available")
+		// } else {
+		// 	fmt.Println("This package has Intel binaries available")
+		// 	fmt.Printf("Rosetta support: %s\n", supportsRosetta)
+		// }
 
 		// Dependencies (if -d flag)
 		if showDependencies {

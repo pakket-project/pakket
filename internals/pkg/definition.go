@@ -24,23 +24,16 @@ type Dependencies struct {
 	OptionalDependencies []string `toml:"optionalDependencies"`
 }
 
-type BinaryMetadata struct {
-	Url               string   `toml:"url"`
-	Binpath           string   `toml:"binPath"`
-	Sha256            string   `toml:"sha256"`
-	SupportedVersions []string `toml:"supportedVersions"`
-}
-
-type Binaries struct {
-	SupportsRosetta bool             `toml:"supportsRosetta"`
-	Intel           []BinaryMetadata `toml:"intel"`
-	Silicon         []BinaryMetadata `toml:"silicon"`
+type PlatformData struct {
+	hash string `toml:"hash"`
 }
 
 type VersionMetadata struct {
-	Url          string       `toml:"url"`
-	Dependencies Dependencies `toml:"dependencies"`
-	Binaries     Binaries     `toml:"binaries"`
+	Url             string       `toml:"url"`
+	Dependencies    Dependencies `toml:"dependencies"`
+	SupportsRosetta bool         `toml:"supportsRosetta"`
+	Intel           PlatformData `toml:"intel"`
+	Silicon         PlatformData `toml:"silicon"`
 }
 
 // Convert data to version metadata

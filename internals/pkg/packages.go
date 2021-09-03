@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"runtime"
 	"strconv"
 
 	"github.com/stewproject/stew/internals/config"
@@ -16,10 +15,11 @@ import (
 type PkgData struct {
 	PkgDef     PackageDefinition
 	PkgPath    string
+	PkgUrl     string
 	VerData    VersionMetadata
+	PlfData    PlatformData
+	PackageUrl string
 	Version    string
-	BinData    BinaryMetadata
-	BinSize    int64
 	Repository string
 }
 
@@ -27,7 +27,7 @@ type PkgData struct {
 func GetPackage(pkgName string, pkgVer string) (PkgData, error) {
 	pkgDef, pkgPath, repo, err := GetPackageMetadata(pkgName) // get package metadata
 	if err != nil {
-		return PkgData{BinSize: 0}, err
+		return PkgData{}, err
 	}
 
 	var version string
@@ -39,16 +39,14 @@ func GetPackage(pkgName string, pkgVer string) (PkgData, error) {
 
 	verData, err := GetPackageVersion(pkgName, *pkgPath, version)
 	if err != nil {
-		return PkgData{PkgDef: *pkgDef, PkgPath: *pkgPath, BinSize: 0, Repository: repo}, err
+		return PkgData{PkgDef: *pkgDef, PkgPath: *pkgPath, Repository: repo}, err
 	}
 
-	binData := GetBinaryMetadata(*verData)
-	binSize, err := GetPackageSize(*binData)
 	if err != nil {
-		return PkgData{PkgDef: *pkgDef, PkgPath: *pkgPath, VerData: *verData, BinData: *binData, BinSize: 0, Repository: repo}, err
+		return PkgData{PkgDef: *pkgDef, PkgPath: *pkgPath, VerData: *verData, Repository: repo}, err
 	}
 
-	return PkgData{PkgDef: *pkgDef, PkgPath: *pkgPath, VerData: *verData, Version: version, BinData: *binData, BinSize: binSize, Repository: repo}, err
+	return PkgData{PkgDef: *pkgDef, PkgPath: *pkgPath, VerData: *verData, Version: version, Repository: repo}, err
 }
 
 // Search all repositories for specific package
@@ -95,33 +93,33 @@ func GetPackageVersion(pkgName, pkgPath, version string) (*VersionMetadata, erro
 	return &metadata, nil
 }
 
-func GetBinaryMetadata(ver VersionMetadata) (binary *BinaryMetadata) {
-	macVer := util.GetVersion() // Get macOS version
+// func GetBinaryMetadata(ver VersionMetadata) (binary *BinaryMetadata) {
+// 	macVer := util.GetVersion() // Get macOS version
 
-	// Get binary information
-	if runtime.GOARCH == silicon { // Apple Silicon
-		for _, b := range ver.Binaries.Silicon {
-			for _, v := range b.SupportedVersions {
-				if v == macVer || v == "all" {
-					binary = &b
-				}
-			}
-		}
-	} else if runtime.GOARCH == intel { // Intel
-		for _, b := range ver.Binaries.Intel {
-			for _, v := range b.SupportedVersions {
-				if v == macVer || v == "all" {
-					binary = &b
-				}
-			}
-		}
-	}
+// 	// Get binary information
+// 	if runtime.GOARCH == silicon { // Apple Silicon
+// 		for _, b := range ver.Binaries.Silicon {
+// 			for _, v := range b.SupportedVersions {
+// 				if v == macVer || v == "all" {
+// 					binary = &b
+// 				}
+// 			}
+// 		}
+// 	} else if runtime.GOARCH == intel { // Intel
+// 		for _, b := range ver.Binaries.Intel {
+// 			for _, v := range b.SupportedVersions {
+// 				if v == macVer || v == "all" {
+// 					binary = &b
+// 				}
+// 			}
+// 		}
+// 	}
 
-	return binary
-}
+// 	return binary
+// }
 
-func GetPackageSize(binary BinaryMetadata) (bytes int64, err error) {
-	resp, err := http.Head(binary.Url)
+func GetPackageSize(url string) (bytes int64, err error) {
+	resp, err := http.Head(url)
 	if err != nil {
 		return 0, err
 	}
