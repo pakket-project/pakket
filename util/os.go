@@ -21,6 +21,11 @@ var (
 	DownloadPath = "/var/tmp/stew"
 )
 
+var (
+	SiliconArch = "arm64"
+	IntelArch   = "amd64"
+)
+
 // Check if path exists
 func DoesPathExist(path string) bool {
 	_, err := os.Stat(path)

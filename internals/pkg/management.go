@@ -12,12 +12,8 @@ import (
 	"github.com/cavaliercoder/grab"
 	"github.com/mholt/archiver/v3"
 	"github.com/stewproject/stew/internals/config"
+	"github.com/stewproject/stew/internals/errors"
 	"github.com/stewproject/stew/util"
-)
-
-var (
-	silicon = "arm64"
-	intel   = "amd64"
 )
 
 // Manuals
@@ -76,7 +72,7 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 	downloadHash := hex.EncodeToString(hashBytes[:])
 
 	if downloadHash != pkg.PlfData.hash {
-		return InvalidHash{
+		return errors.InvalidHash{
 			Repository: pkg.Repository,
 		}
 	}
