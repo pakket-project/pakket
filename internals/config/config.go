@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pelletier/go-toml"
+	"github.com/pelletier/go-toml/v2"
 	"github.com/spf13/viper"
 	"github.com/stewproject/stew/util"
 )

@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"github.com/pelletier/go-toml"
+	"github.com/pelletier/go-toml/v2"
 )
 
 type PackageDefinition struct {

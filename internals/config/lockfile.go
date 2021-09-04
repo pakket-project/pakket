@@ -3,7 +3,7 @@ package config
 import (
 	"os"
 
-	"github.com/pelletier/go-toml"
+	"github.com/pelletier/go-toml/v2"
 	"github.com/stewproject/stew/util"
 )
 
