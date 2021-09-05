@@ -25,7 +25,7 @@ type Dependencies struct {
 }
 
 type PlatformData struct {
-	hash string `toml:"hash"`
+	Hash string `toml:"hash"`
 }
 
 type VersionMetadata struct {
