@@ -22,8 +22,8 @@ var (
 )
 
 var (
-	SiliconArch = "arm64"
-	IntelArch   = "amd64"
+	// is either "silicon" or "intel"
+	Arch string
 )
 
 // Check if path exists
