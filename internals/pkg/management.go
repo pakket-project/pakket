@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	sha "crypto/sha256"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"os"
@@ -68,10 +68,10 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 		return err
 	}
 
-	hashBytes := sha.Sum256(fileData)
+	hashBytes := sha256.Sum256(fileData)
 	downloadHash := hex.EncodeToString(hashBytes[:])
 
-	if downloadHash != pkg.PlfData.hash {
+	if downloadHash != pkg.PlfData.Hash {
 		return errors.InvalidHash{
 			Repository: pkg.Repository,
 		}
@@ -170,7 +170,7 @@ func InstallPackage(pkg PkgData) (err error) {
 	}
 
 	// add to lockfile
-	err = config.AddPkgToLockfile(config.LockfileMetadata{Name: pkg.PkgDef.Package.Name, Version: pkg.Version, Sha256: pkg.PlfData.hash, Repository: pkg.Repository})
+	err = config.AddPkgToLockfile(config.LockfileMetadata{Name: pkg.PkgDef.Package.Name, Version: pkg.Version, Hash: pkg.PlfData.Hash, Repository: pkg.Repository})
 	if err != nil {
 		return err
 	}
