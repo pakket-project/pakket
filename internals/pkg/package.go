@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/stewproject/stew/internals/errors"
 	"github.com/stewproject/stew/internals/repo"
@@ -18,6 +19,7 @@ type PkgData struct {
 	PkgUrl     string
 	Version    string
 	Repository string
+	BinSize    int64
 }
 
 // One function to get all information needed to install a package. Version should be "latest" for latest version. binSize is the size of the tarball in bytes.
@@ -80,5 +82,28 @@ func GetPackage(pkgName string, pkgVersion *string) (pkgData *PkgData, err error
 
 	pkgUrl := fmt.Sprintf("%s/%s/%s/%s-%s-%s.tar.xz", repo.CorePackagesURL, pkgName, version, pkgName, version, util.Arch)
 
-	return &PkgData{PkgDef: pkgDef, VerData: verData, PlfData: plfData, Repository: "core", Version: version, PkgUrl: pkgUrl}, err
+	// get pkg size
+	size, err := GetPackageSize(pkgUrl)
+
+	return &PkgData{PkgDef: pkgDef, VerData: verData, PlfData: plfData, Repository: "core", Version: version, PkgUrl: pkgUrl, BinSize: size}, err
+}
+
+func GetPackageSize(url string) (bytes int64, err error) {
+	resp, err := http.Head(url)
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+
+	// Check server response
+	if resp.StatusCode != http.StatusOK {
+		return 0, fmt.Errorf("bad status: %s", resp.Status)
+	}
+
+	bytes, err = strconv.ParseInt(resp.Header.Get("Content-Length"), 10, 64)
+	if err != nil {
+		return 0, err
+	}
+
+	return bytes, nil
 }
