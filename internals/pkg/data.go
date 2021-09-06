@@ -38,7 +38,7 @@ type VersionMetadata struct {
 
 // Convert data to version metadata
 func ParseVersion(versionMetadata []byte) (VersionMetadata, error) {
-	var metadata VersionMetadata
+	metadata := VersionMetadata{Intel: PlatformData{Hash: ""}, Silicon: PlatformData{Hash: ""}}
 	err := toml.Unmarshal(versionMetadata, &metadata)
 
 	return metadata, err
