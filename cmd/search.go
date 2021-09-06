@@ -1,7 +1,15 @@
 package cmd
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/spf13/cobra"
+	"github.com/stewproject/stew/internals/errors"
+	"github.com/stewproject/stew/internals/pkg"
+	"github.com/stewproject/stew/util"
+	"github.com/stewproject/stew/util/style"
+	"github.com/theckman/yacspin"
 )
 
 var showDependencies bool
@@ -18,88 +26,84 @@ var searchCmd = &cobra.Command{
 	Aliases: []string{"info"},
 	Args:    cobra.MinimumNArgs(1),
 	Example: "stew search wget",
-	// Run: func(cmd *cobra.Command, args []string) {
-	// 	spinner, err := yacspin.New(util.SpinnerConf)
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// 	spinner.Start()
+	Run: func(cmd *cobra.Command, args []string) {
+		spinner, err := yacspin.New(util.SpinnerConf)
+		if err != nil {
+			panic(err)
+		}
+		spinner.Start()
 
-	// 	packageName := args[0]
+		packageName := args[0]
 
-	// 	spinner.Message(fmt.Sprintf("Searching for package %s", style.Pkg.Render(packageName)))
+		var version *string
+		if len(args) > 1 {
+			version = &args[1]
+		} else {
+			version = nil
+		}
 
-	// 	pkgData, pkgPath, repo, err := pkg.GetPackageMetadata(packageName) // Get package
-	// 	if _, ok := err.(pkg.PackageNotFoundError); ok {
-	// 		spinner.StopFailMessage(fmt.Sprintf("Cannot find package %s\n", style.Pkg.Render(packageName)))
-	// 		spinner.StopFail()
-	// 		return
-	// 	} else if err != nil {
-	// 		spinner.StopFailMessage(fmt.Sprintf("Error while searching package: %s", err.Error()))
-	// 		spinner.StopFail()
-	// 		return
-	// 	}
+		spinner.Message(fmt.Sprintf("Searching for package %s", style.Pkg.Render(packageName)))
 
-	// 	var version string
+		pkgData, err := pkg.GetPackage(packageName, version) // Get package
+		if _, ok := err.(errors.PackageNotFoundError); ok {
+			spinner.StopFailMessage(fmt.Sprintf("Cannot find package %s\n", style.Pkg.Render(packageName)))
+			spinner.StopFail()
+			return
+		} else if err != nil {
+			spinner.StopFailMessage(fmt.Sprintf("Error while searching package: %s", err.Error()))
+			spinner.StopFail()
+			return
+		}
 
-	// 	// If version argument is supplied
-	// 	if len(args) == 2 {
-	// 		version = args[1]
-	// 	} else {
-	// 		version = pkgData.Package.Version
-	// 	}
+		// //Rosetta support icon
+		// var supportsRosetta string
+		// if pkgData.VerData.SupportsRosetta {
+		// 	supportsRosetta = style.Success.Render("✓")
+		// } else {
+		// 	supportsRosetta = style.Error.Render("✗")
+		// }
 
-	// 	versionData, err := pkg.GetPackageVersion(packageName, *pkgPath, version)
-	// 	if err != nil {
-	// 		spinner.StopFailMessage(fmt.Sprintf("Cannot find version %s", version))
-	// 		spinner.StopFail()
-	// 		return
-	// 	}
+		spinner.StopMessage(fmt.Sprintf("Found package %s:\n", style.Pkg.Render(packageName)))
+		spinner.Stop()
 
-	// 	// TODO
-	// 	// Rosetta support icon
-	// 	// if versionData.Binaries.SupportsRosetta {
-	// 	// 	supportsRosetta = style.Success.Render("✓")
-	// 	// } else {
-	// 	// 	supportsRosetta = style.Error.Render("✗")
-	// 	// }
+		// Print package information
+		fmt.Printf("Description: %s\n", pkgData.PkgDef.Package.Description)
+		fmt.Printf("Latest version: %s\n", pkgData.PkgDef.Package.Version)
+		fmt.Printf("Available versions: %s\n", strings.Join(pkgData.PkgDef.Package.AvailableVersions, ", "))
+		fmt.Printf("Homepage: %s\n\n", style.Link.Render(pkgData.PkgDef.Package.Homepage))
 
-	// 	spinner.StopMessage(fmt.Sprintf("Found package %s:\n", style.Pkg.Render(packageName)))
-	// 	spinner.Stop()
+		intelPackage := style.Success.Render("✓")
+		siliconPackage := style.Success.Render("✓")
 
-	// 	// Print package information
-	// 	fmt.Printf("Description: %s\n", pkgData.Package.Description)
-	// 	fmt.Printf("Latest version: %s\n", pkgData.Package.Version)
-	// 	fmt.Printf("Available versions: %s\n", strings.Join(pkgData.Package.AvailableVersions, ", "))
-	// 	fmt.Printf("Repository: %s\n", style.Repo.Render(repo))
-	// 	fmt.Printf("Homepage: %s\n\n", style.Link.Render(pkgData.Package.Homepage))
+		// Packages
+		if pkgData.VerData.Intel.Hash == "" {
+			// no intel package
+			intelPackage = style.Error.Render("✗")
+		}
 
-	// 	// TODO
-	// 	// Binaries
-	// 	// if len(versionData.Binaries.Intel) > 0 || len(versionData.Binaries.Silicon) > 0 {
-	// 	// 	fmt.Println("This package has Intel & Silicon binaries available")
-	// 	// } else if versionData.Silicon {
-	// 	// 	fmt.Println("This package has Silicon binaries available")
-	// 	// } else {
-	// 	// 	fmt.Println("This package has Intel binaries available")
-	// 	// 	fmt.Printf("Rosetta support: %s\n", supportsRosetta)
-	// 	// }
+		if pkgData.VerData.Silicon.Hash == "" {
+			// no silicon package
+			siliconPackage = style.Error.Render("✗")
+		}
 
-	// 	// Dependencies (if -d flag)
-	// 	if showDependencies {
-	// 		fmt.Print("\n")
-	// 		if len(versionData.Dependencies.Dependencies) > 0 {
-	// 			fmt.Printf("Dependencies: %s\n", strings.Join(versionData.Dependencies.Dependencies, ", "))
-	// 		}
+		fmt.Printf("Intel package: %s\n", intelPackage)
+		fmt.Printf("Apple Silicon package: %s\n", siliconPackage)
 
-	// 		if len(versionData.Dependencies.BuildDependencies) > 0 {
-	// 			fmt.Printf("Build dependencies: %s\n", strings.Join(versionData.Dependencies.BuildDependencies, ", "))
-	// 		}
+		// Dependencies (if -d flag)
+		if showDependencies {
+			fmt.Print("\n")
+			if len(pkgData.VerData.Dependencies.Dependencies) > 0 {
+				fmt.Printf("Dependencies: %s\n", strings.Join(pkgData.VerData.Dependencies.Dependencies, ", "))
+			}
 
-	// 		if len(versionData.Dependencies.OptionalDependencies) > 0 {
-	// 			fmt.Printf("Optional dependencies: %s\n", strings.Join(versionData.Dependencies.OptionalDependencies, ", "))
-	// 		}
-	// 	}
+			if len(pkgData.VerData.Dependencies.BuildDependencies) > 0 {
+				fmt.Printf("Build dependencies: %s\n", strings.Join(pkgData.VerData.Dependencies.BuildDependencies, ", "))
+			}
 
-	// },
+			if len(pkgData.VerData.Dependencies.OptionalDependencies) > 0 {
+				fmt.Printf("Optional dependencies: %s\n", strings.Join(pkgData.VerData.Dependencies.OptionalDependencies, ", "))
+			}
+		}
+
+	},
 }
