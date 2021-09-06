@@ -55,13 +55,13 @@ var searchCmd = &cobra.Command{
 			return
 		}
 
-		// //Rosetta support icon
-		// var supportsRosetta string
-		// if pkgData.VerData.SupportsRosetta {
-		// 	supportsRosetta = style.Success.Render("✓")
-		// } else {
-		// 	supportsRosetta = style.Error.Render("✗")
-		// }
+		//Rosetta support icon
+		var supportsRosetta string
+		if pkgData.VerData.SupportsRosetta {
+			supportsRosetta = style.Success.Render("✓")
+		} else {
+			supportsRosetta = style.Error.Render("✗")
+		}
 
 		spinner.StopMessage(fmt.Sprintf("Found package %s:\n", style.Pkg.Render(packageName)))
 		spinner.Stop()
@@ -80,14 +80,16 @@ var searchCmd = &cobra.Command{
 			// no intel package
 			intelPackage = style.Error.Render("✗")
 		}
+		fmt.Printf("Intel: %s\n", intelPackage)
 
 		if pkgData.VerData.Silicon.Hash == "" {
 			// no silicon package
 			siliconPackage = style.Error.Render("✗")
+			fmt.Printf("Apple Silicon: %s\n", siliconPackage)
+			fmt.Printf("Rosetta: %s\n", supportsRosetta)
+		} else {
+			fmt.Printf("Apple Silicon: %s\n", siliconPackage)
 		}
-
-		fmt.Printf("Intel package: %s\n", intelPackage)
-		fmt.Printf("Apple Silicon package: %s\n", siliconPackage)
 
 		// Dependencies (if -d flag)
 		if showDependencies {
