@@ -1,16 +1,17 @@
 package config
 
 import (
+	"errors"
 	"os"
 
-	"github.com/pelletier/go-toml"
+	"github.com/pelletier/go-toml/v2"
 	"github.com/stewproject/stew/util"
 )
 
 type LockfileMetadata struct {
 	Name       string `toml:"name"`
 	Version    string `toml:"version"`
-	Sha256     string `toml:"sha256"`
+	Hash       string `toml:"hash"`
 	Repository string `toml:"repository"`
 }
 
@@ -20,7 +21,16 @@ type LockfileStruct struct {
 
 func readLockfile() (err error) {
 	file, err := os.ReadFile(util.LockfilePath)
-	if err != nil {
+	if errors.Is(err, os.ErrNotExist) {
+		_, err = os.Create(util.LockfilePath)
+		if err != nil {
+			return err
+		}
+		file, err = os.ReadFile(util.LockfilePath)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
 		return err
 	}
 

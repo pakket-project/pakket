@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	sha "crypto/sha256"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"os"
@@ -11,13 +11,9 @@ import (
 
 	"github.com/cavaliercoder/grab"
 	"github.com/mholt/archiver/v3"
-	"github.com/stewproject/stew/internals/config"
+	"github.com/stewproject/stew/internals/errors"
+	"github.com/stewproject/stew/internals/repo"
 	"github.com/stewproject/stew/util"
-)
-
-var (
-	silicon = "arm64"
-	intel   = "amd64"
 )
 
 // Manuals
@@ -61,10 +57,9 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 	}
 
 	// Download tar
-	resp, err := grab.Get(util.DownloadPath, pkg.BinData.Url)
-	defer os.RemoveAll(resp.Filename)
+	resp, err := grab.Get(util.DownloadPath, pkg.PkgUrl)
 	if err != nil {
-		return
+		return err
 	}
 
 	fileData, err := os.ReadFile(resp.Filename)
@@ -72,12 +67,12 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 		return err
 	}
 
-	checksumBytes := sha.Sum256(fileData)
+	checksumBytes := sha256.Sum256(fileData)
 	downloadChecksum := hex.EncodeToString(checksumBytes[:])
 
-	if downloadChecksum != pkg.BinData.Sha256 {
-		return InvalidChecksum{
-			Repository: pkg.Repository,
+	if downloadChecksum != pkg.PlfData.Hash {
+		return errors.InvalidChecksum{
+			Mirror: repo.CorePackagesURL,
 		}
 	}
 
@@ -174,7 +169,7 @@ func InstallPackage(pkg PkgData) (err error) {
 	}
 
 	// add to lockfile
-	err = config.AddPkgToLockfile(config.LockfileMetadata{Name: pkg.PkgDef.Package.Name, Version: pkg.Version, Sha256: pkg.BinData.Sha256, Repository: pkg.Repository})
+	// err = config.AddPkgToLockfile(config.LockfileMetadata{Name: pkg.PkgDef.Package.Name, Version: pkg.Version, Hash: pkg.PlfData.Hash, Repository: pkg.Repository})
 	if err != nil {
 		return err
 	}

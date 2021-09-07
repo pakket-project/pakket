@@ -30,21 +30,34 @@ var installCmd = &cobra.Command{
 	Args:    cobra.MinimumNArgs(1),
 	Example: "stew install golang wget python@3.9",
 	Run: func(cmd *cobra.Command, args []string) {
+		keys := make(map[string]bool)
 		for _, v := range args {
 			p := strings.Split(v, "@")
-			if len(p) == 1 {
-				p = append(p, "latest")
-			}
-			pkgName := p[0] // package name
-			version := p[1] // version
+			name := p[0]
 
-			pkgData, err := pkg.GetPackage(pkgName, version)
+			// check for dulicates, skip if duplicate
+			if _, value := keys[name]; value {
+				continue
+			}
+			keys[name] = true
+
+			// check if package is already installed (lockfile)
+			// config.LockFile.Packages
+
+			var version *string
+			if len(p) > 1 {
+				version = &p[1]
+			} else {
+				version = nil
+			}
+
+			pkgData, err := pkg.GetPackage(name, version)
 			if err != nil {
 				panic(err)
 			}
 
 			pkgs = append(pkgs, fmt.Sprintf("%s-%s", pkgData.PkgDef.Package.Name, pkgData.Version))
-			pkgsToInstall = append(pkgsToInstall, pkgData)
+			pkgsToInstall = append(pkgsToInstall, *pkgData)
 			totalSize += pkgData.BinSize
 		}
 

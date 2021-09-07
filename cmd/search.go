@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/stewproject/stew/internals/errors"
 	"github.com/stewproject/stew/internals/pkg"
 	"github.com/stewproject/stew/util"
 	"github.com/stewproject/stew/util/style"
@@ -34,10 +35,17 @@ var searchCmd = &cobra.Command{
 
 		packageName := args[0]
 
+		var version *string
+		if len(args) > 1 {
+			version = &args[1]
+		} else {
+			version = nil
+		}
+
 		spinner.Message(fmt.Sprintf("Searching for package %s", style.Pkg.Render(packageName)))
 
-		pkgData, pkgPath, repo, err := pkg.GetPackageMetadata(packageName) // Get package
-		if _, ok := err.(pkg.PackageNotFoundError); ok {
+		pkgData, err := pkg.GetPackage(packageName, version) // Get package
+		if _, ok := err.(errors.PackageNotFoundError); ok {
 			spinner.StopFailMessage(fmt.Sprintf("Cannot find package %s\n", style.Pkg.Render(packageName)))
 			spinner.StopFail()
 			return
@@ -47,26 +55,9 @@ var searchCmd = &cobra.Command{
 			return
 		}
 
-		var version string
-
-		// If version argument is supplied
-		if len(args) == 2 {
-			version = args[1]
-		} else {
-			version = pkgData.Package.Version
-		}
-
-		versionData, err := pkg.GetPackageVersion(packageName, *pkgPath, version)
-		if err != nil {
-			spinner.StopFailMessage(fmt.Sprintf("Cannot find version %s", version))
-			spinner.StopFail()
-			return
-		}
-
+		//Rosetta support icon
 		var supportsRosetta string
-
-		// Rosetta support icon
-		if versionData.Binaries.SupportsRosetta {
+		if pkgData.VerData.SupportsRosetta {
 			supportsRosetta = style.Success.Render("✓")
 		} else {
 			supportsRosetta = style.Error.Render("✗")
@@ -76,35 +67,43 @@ var searchCmd = &cobra.Command{
 		spinner.Stop()
 
 		// Print package information
-		fmt.Printf("Description: %s\n", pkgData.Package.Description)
-		fmt.Printf("Latest version: %s\n", pkgData.Package.Version)
-		fmt.Printf("Available versions: %s\n", strings.Join(pkgData.Package.AvailableVersions, ", "))
-		fmt.Printf("Repository: %s\n", style.Repo.Render(repo))
-		fmt.Printf("Homepage: %s\n\n", style.Link.Render(pkgData.Package.Homepage))
+		fmt.Printf("Description: %s\n", pkgData.PkgDef.Package.Description)
+		fmt.Printf("Latest version: %s\n", pkgData.PkgDef.Package.Version)
+		fmt.Printf("Available versions: %s\n", strings.Join(pkgData.PkgDef.Package.AvailableVersions, ", "))
+		fmt.Printf("Homepage: %s\n\n", style.Link.Render(pkgData.PkgDef.Package.Homepage))
 
-		// Binaries
-		if len(versionData.Binaries.Intel) > 0 || len(versionData.Binaries.Silicon) > 0 {
-			fmt.Println("This package has Intel & Silicon binaries available")
-		} else if len(versionData.Binaries.Silicon) > 0 {
-			fmt.Println("This package has Silicon binaries available")
+		intelPackage := style.Success.Render("✓")
+		siliconPackage := style.Success.Render("✓")
+
+		// Packages
+		if pkgData.VerData.Intel.Hash == "" {
+			// no intel package
+			intelPackage = style.Error.Render("✗")
+		}
+		fmt.Printf("Intel: %s\n", intelPackage)
+
+		if pkgData.VerData.Silicon.Hash == "" {
+			// no silicon package
+			siliconPackage = style.Error.Render("✗")
+			fmt.Printf("Apple Silicon: %s\n", siliconPackage)
+			fmt.Printf("Rosetta: %s\n", supportsRosetta)
 		} else {
-			fmt.Println("This package has Intel binaries available")
-			fmt.Printf("Rosetta support: %s\n", supportsRosetta)
+			fmt.Printf("Apple Silicon: %s\n", siliconPackage)
 		}
 
 		// Dependencies (if -d flag)
 		if showDependencies {
 			fmt.Print("\n")
-			if len(versionData.Dependencies.Dependencies) > 0 {
-				fmt.Printf("Dependencies: %s\n", strings.Join(versionData.Dependencies.Dependencies, ", "))
+			if len(pkgData.VerData.Dependencies.Dependencies) > 0 {
+				fmt.Printf("Dependencies: %s\n", strings.Join(pkgData.VerData.Dependencies.Dependencies, ", "))
 			}
 
-			if len(versionData.Dependencies.BuildDependencies) > 0 {
-				fmt.Printf("Build dependencies: %s\n", strings.Join(versionData.Dependencies.BuildDependencies, ", "))
+			if len(pkgData.VerData.Dependencies.BuildDependencies) > 0 {
+				fmt.Printf("Build dependencies: %s\n", strings.Join(pkgData.VerData.Dependencies.BuildDependencies, ", "))
 			}
 
-			if len(versionData.Dependencies.OptionalDependencies) > 0 {
-				fmt.Printf("Optional dependencies: %s\n", strings.Join(versionData.Dependencies.OptionalDependencies, ", "))
+			if len(pkgData.VerData.Dependencies.OptionalDependencies) > 0 {
+				fmt.Printf("Optional dependencies: %s\n", strings.Join(pkgData.VerData.Dependencies.OptionalDependencies, ", "))
 			}
 		}
 

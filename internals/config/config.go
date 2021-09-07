@@ -4,26 +4,19 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pelletier/go-toml"
+	"github.com/pelletier/go-toml/v2"
 	"github.com/spf13/viper"
 	"github.com/stewproject/stew/util"
 )
 
-type RepositoriesMetadata struct {
-	Name         string `toml:"name"`
-	Author       string `toml:"author"`
-	Path         string `toml:"path"`
-	PackagesPath string `toml:"packagesPath"`
-	GitURL       string `toml:"gitUrl"`
-	IsGit        bool   `toml:"isGit"`
-}
-
-type Repositories struct {
-	Locations []RepositoriesMetadata `toml:"locations" mapstructure:"locations"`
+type Mirror struct {
+	URL  string `toml:"url"`
+	Name string `toml:"name"`
 }
 
 type ConfigStruct struct {
-	Repositories Repositories `toml:"repositories"`
+	Mirrors   []Mirror `toml:"mirrors"`
+	Community bool     `toml:"community"`
 }
 
 var (
@@ -68,8 +61,8 @@ func GetConfig() ConfigStruct {
 }
 
 // Add repository to config
-func AddRepo(repoMetadata RepositoriesMetadata) error {
-	Config.Repositories.Locations = append(Config.Repositories.Locations, repoMetadata)
+func AddMirror(mirror Mirror) error {
+	Config.Mirrors = append(Config.Mirrors, mirror)
 
 	config, err := toml.Marshal(&Config)
 	if err != nil {
@@ -86,7 +79,7 @@ func AddRepo(repoMetadata RepositoriesMetadata) error {
 
 // Delete repository
 func DelRepo(configIndex int) error {
-	Config.Repositories.Locations = append(Config.Repositories.Locations[:configIndex], Config.Repositories.Locations[configIndex+1:]...)
+	Config.Mirrors = append(Config.Mirrors[:configIndex], Config.Mirrors[configIndex+1:]...)
 
 	config, err := toml.Marshal(&Config)
 	if err != nil {
