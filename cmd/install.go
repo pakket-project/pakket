@@ -1,8 +1,13 @@
 package cmd
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/spf13/cobra"
 	"github.com/stewproject/stew/internals/pkg"
+	"github.com/stewproject/stew/util"
+	"github.com/stewproject/stew/util/style"
 )
 
 func init() {
@@ -24,41 +29,54 @@ var installCmd = &cobra.Command{
 	Short:   "Install packages",
 	Args:    cobra.MinimumNArgs(1),
 	Example: "stew install golang wget python@3.9",
-	// Run: func(cmd *cobra.Command, args []string) {
-	// 	for _, v := range args {
-	// 		p := strings.Split(v, "@")
-	// 		if len(p) == 1 {
-	// 			p = append(p, "latest")
-	// 		}
-	// 		pkgName := p[0] // package name
-	// 		version := p[1] // version
+	Run: func(cmd *cobra.Command, args []string) {
+		keys := make(map[string]bool)
+		for _, v := range args {
+			p := strings.Split(v, "@")
+			name := p[0]
 
-	// 		pkgData, err := pkg.GetPackage(pkgName, version)
-	// 		if err != nil {
-	// 			panic(err)
-	// 		}
+			// check for dulicates, skip if duplicate
+			if _, value := keys[name]; value {
+				continue
+			}
+			keys[name] = true
 
-	// 		pkgs = append(pkgs, fmt.Sprintf("%s-%s", pkgData.PkgDef.Package.Name, pkgData.Version))
-	// 		pkgsToInstall = append(pkgsToInstall, pkgData)
-	// 		// totalSize += pkgData.BinSize
-	// 	}
+			// check if package is already installed (lockfile)
+			// config.LockFile.Packages
 
-	// 	fmt.Printf("Packages: %s (%d)\n", strings.Join(pkgs, ", "), len(pkgs))
-	// 	fmt.Printf("Total download size: %s\n", util.ByteToString(totalSize))
+			var version *string
+			if len(p) > 1 {
+				version = &p[1]
+			} else {
+				version = nil
+			}
 
-	// 	if !yes {
-	// 		yes = util.Confirm("\nDo you want to continue?")
-	// 	}
+			pkgData, err := pkg.GetPackage(name, version)
+			if err != nil {
+				panic(err)
+			}
 
-	// 	if yes {
-	// 		for _, v := range pkgsToInstall {
-	// 			err := pkg.InstallPackage(v)
-	// 			if err != nil {
-	// 				fmt.Printf("\n%s: %s\n", style.Error.Render("Error"), err.Error())
-	// 			} else {
-	// 				fmt.Printf("\nInstalled %s", v.PkgDef.Package.Name)
-	// 			}
-	// 		}
-	// 	}
-	// },
+			pkgs = append(pkgs, fmt.Sprintf("%s-%s", pkgData.PkgDef.Package.Name, pkgData.Version))
+			pkgsToInstall = append(pkgsToInstall, *pkgData)
+			totalSize += pkgData.BinSize
+		}
+
+		fmt.Printf("Packages: %s (%d)\n", strings.Join(pkgs, ", "), len(pkgs))
+		fmt.Printf("Total download size: %s\n", util.ByteToString(totalSize))
+
+		if !yes {
+			yes = util.Confirm("\nDo you want to continue?")
+		}
+
+		if yes {
+			for _, v := range pkgsToInstall {
+				err := pkg.InstallPackage(v)
+				if err != nil {
+					fmt.Printf("\n%s: %s\n", style.Error.Render("Error"), err.Error())
+				} else {
+					fmt.Printf("\nInstalled %s", v.PkgDef.Package.Name)
+				}
+			}
+		}
+	},
 }

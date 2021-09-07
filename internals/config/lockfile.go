@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"os"
 
 	"github.com/pelletier/go-toml/v2"
@@ -20,7 +21,16 @@ type LockfileStruct struct {
 
 func readLockfile() (err error) {
 	file, err := os.ReadFile(util.LockfilePath)
-	if err != nil {
+	if errors.Is(err, os.ErrNotExist) {
+		_, err = os.Create(util.LockfilePath)
+		if err != nil {
+			return err
+		}
+		file, err = os.ReadFile(util.LockfilePath)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
 		return err
 	}
 

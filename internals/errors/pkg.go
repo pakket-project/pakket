@@ -2,8 +2,6 @@ package errors
 
 import (
 	"fmt"
-
-	"github.com/stewproject/stew/util/style"
 )
 
 type PackageNotFoundError struct {
@@ -25,9 +23,9 @@ func (err VersionNotFoundError) Error() string {
 
 // invalid sha256 hash (thrown if remote hash differs from repository hash)
 type InvalidHash struct {
-	Repository string
+	Mirror string
 }
 
 func (err InvalidHash) Error() string {
-	return fmt.Sprintf("Cannot validate checksum. It is possible somebody has tampered with the file, or that you are the victim of a MITM-attack.\nContact the repository maintainer if you believe this is an error. (%s)", style.Repo.Render(err.Repository))
+	return fmt.Sprintf("Cannot validate checksum. It is possible somebody has tampered with the file on the mirror, or that you are the victim of a MITM-attack.\nMirror: p%s", err.Mirror)
 }
