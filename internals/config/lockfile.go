@@ -11,7 +11,7 @@ import (
 type LockfileMetadata struct {
 	Name       string `toml:"name"`
 	Version    string `toml:"version"`
-	Hash       string `toml:"hash"`
+	Checksum   string `toml:"checksum"`
 	Repository string `toml:"repository"`
 }
 

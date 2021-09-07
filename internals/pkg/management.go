@@ -70,7 +70,7 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 	checksumBytes := sha256.Sum256(fileData)
 	downloadChecksum := hex.EncodeToString(checksumBytes[:])
 
-	if downloadChecksum != pkg.PlfData.Hash {
+	if downloadChecksum != pkg.PlfData.Checksum {
 		return errors.InvalidChecksum{
 			Mirror: repo.CorePackagesURL,
 		}

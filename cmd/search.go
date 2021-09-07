@@ -76,13 +76,13 @@ var searchCmd = &cobra.Command{
 		siliconPackage := style.Success.Render("✓")
 
 		// Packages
-		if pkgData.VerData.Intel.Hash == "" {
+		if pkgData.VerData.Intel.Checksum == "" {
 			// no intel package
 			intelPackage = style.Error.Render("✗")
 		}
 		fmt.Printf("Intel: %s\n", intelPackage)
 
-		if pkgData.VerData.Silicon.Hash == "" {
+		if pkgData.VerData.Silicon.Checksum == "" {
 			// no silicon package
 			siliconPackage = style.Error.Render("✗")
 			fmt.Printf("Apple Silicon: %s\n", siliconPackage)

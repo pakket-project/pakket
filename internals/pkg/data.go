@@ -25,7 +25,7 @@ type Dependencies struct {
 }
 
 type PlatformData struct {
-	Hash string `toml:"hash"`
+	Checksum string `toml:"checksum"`
 }
 
 type VersionMetadata struct {
@@ -38,7 +38,7 @@ type VersionMetadata struct {
 
 // Convert data to version metadata
 func ParseVersion(versionMetadata []byte) (VersionMetadata, error) {
-	metadata := VersionMetadata{Intel: PlatformData{Hash: ""}, Silicon: PlatformData{Hash: ""}}
+	metadata := VersionMetadata{Intel: PlatformData{Checksum: ""}, Silicon: PlatformData{Checksum: ""}}
 	err := toml.Unmarshal(versionMetadata, &metadata)
 
 	return metadata, err
