@@ -26,7 +26,6 @@ require (
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.8.1
-	github.com/pakket-project/pakket v0.0.0-20210907081806-9eec61bca4e9
 	github.com/theckman/yacspin v0.8.0
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	golang.org/x/sys v0.0.0-20210915083310-ed5796bab164 // indirect
