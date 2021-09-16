@@ -25,18 +25,18 @@ var (
 	LockFile LockfileStruct
 )
 
-// Get main Stew config
+// Get main pakket config
 func GetConfig() ConfigStruct {
 	viper.SetConfigName("config")
 	viper.SetConfigType("toml")
-	viper.AddConfigPath(util.StewPath)
+	viper.AddConfigPath(util.PakketPath)
 
 	err := viper.ReadInConfig()
 	// If config is not found
 	if _, errNotExists := err.(viper.ConfigFileNotFoundError); errNotExists {
-		// Check if StewPath exists, if not, creates directory
-		if exists := util.DoesPathExist(util.StewPath); !exists {
-			panic(fmt.Errorf("%s doesn't exist", util.StewPath))
+		// Check if PakketPath exists, if not, creates directory
+		if exists := util.DoesPathExist(util.PakketPath); !exists {
+			panic(fmt.Errorf("%s doesn't exist", util.PakketPath))
 		}
 
 		_, err = os.Create(util.ConfigFile) // create config file

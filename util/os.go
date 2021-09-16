@@ -10,15 +10,15 @@ import (
 
 var (
 	// Path that houses config & repositores
-	StewPath = "/etc/stew"
-	// Path to main Stew config
-	ConfigFile = path.Join(StewPath, "config.toml")
+	PakketPath = "/etc/pakket"
+	// Path to main pakket config
+	ConfigFile = path.Join(PakketPath, "config.toml")
 	// Path to lockfile w/ currently installed packages
-	LockfilePath = path.Join(StewPath, "lockfile.toml")
-	// Path to Stew repositories
-	RepoPath = path.Join(StewPath, "repositories")
+	LockfilePath = path.Join(PakketPath, "lockfile.toml")
+	// Path to pakket repositories
+	RepoPath = path.Join(PakketPath, "repositories")
 	// Path to temporary downloads/clones
-	DownloadPath = "/var/tmp/stew"
+	DownloadPath = "/var/tmp/pakket"
 )
 
 var (

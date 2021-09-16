@@ -1,4 +1,4 @@
-# Stew
+# pakket
 
 The last package manager macOS will ever need.
 Built with simplicity, functionality, and speed in mind.

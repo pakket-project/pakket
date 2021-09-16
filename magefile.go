@@ -1,3 +1,4 @@
+//go:build mage
 // +build mage
 
 package main
@@ -16,7 +17,7 @@ type (
 	Build mg.Namespace
 )
 
-var name = "stew"
+var name = "pakket"
 var buildDir = "build"
 
 // var Default = Build
@@ -44,13 +45,13 @@ func build(arch string, opts BuildOptions) error {
 	var outputName string
 
 	if arch == SiliconArch {
-		outputName = "stew-silicon"
+		outputName = "pakket-silicon"
 
-		fmt.Println("Building Stew for Silicon architecture...")
+		fmt.Println("Building pakket for Silicon architecture...")
 	} else if arch == IntelArch {
-		outputName = "stew-intel"
+		outputName = "pakket-intel"
 
-		fmt.Println("Building Stew for Intel architecture...")
+		fmt.Println("Building pakket for Intel architecture...")
 	}
 
 	outputPath := path.Join(
@@ -90,8 +91,8 @@ func Clean() {
 
 func Install() {
 	if runtime.GOARCH == "arm64" {
-		os.Rename("build/stew-silicon", "/usr/local/bin/stew")
+		os.Rename("build/pakket-silicon", "/usr/local/bin/pakket")
 	} else if runtime.GOARCH == "amd64" {
-		os.Rename("build/stew-intel", "/usr/local/bin/stew")
+		os.Rename("build/pakket-intel", "/usr/local/bin/pakket")
 	}
 }

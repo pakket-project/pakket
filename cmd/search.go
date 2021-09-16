@@ -25,7 +25,7 @@ var searchCmd = &cobra.Command{
 	Short:   "Search for a specific package",
 	Aliases: []string{"info"},
 	Args:    cobra.MinimumNArgs(1),
-	Example: "stew search wget",
+	Example: "pakket search wget",
 	Run: func(cmd *cobra.Command, args []string) {
 		spinner, err := yacspin.New(util.SpinnerConf)
 		if err != nil {

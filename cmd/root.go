@@ -4,17 +4,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type Stew struct {
+type Pakket struct {
 	Version string
 }
 
 var (
-	stew = Stew{Version: "v0.0.1"}
+	pakket = Pakket{Version: "v0.0.1"}
+	yes    bool
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "stew",
-	Short: "Stew is a package manager for macOS. Contribute: https://github.com/stewproject/stew",
+	Use:   "pakket",
+	Short: "pakket is a package manager for macOS. Contribute: https://github.com/pakket-project/pakket",
 }
 
 func Execute() {

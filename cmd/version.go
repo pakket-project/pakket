@@ -12,8 +12,8 @@ func init() {
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print the version number of Stew",
+	Short: "Print the version number of pakket",
 	Run: func(cmd *cobra.Command, args []string) {
-        fmt.Printf("Stew Package Manager - %s\n", stew.Version)
+		fmt.Printf("pakket - %s\n", pakket.Version)
 	},
 }

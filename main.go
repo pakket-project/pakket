@@ -13,7 +13,7 @@ import (
 func main() {
 	// Error if not running MacOS
 	if runtime.GOOS != "darwin" {
-		fmt.Println("You must be on MacOS to run Stew!")
+		fmt.Println("You must be on MacOS to run pakket!")
 		os.Exit(1)
 	}
 
@@ -22,11 +22,12 @@ func main() {
 	} else if runtime.GOARCH == "amd64" {
 		util.Arch = "intel"
 	} else {
-		fmt.Println("Unsupported architecture! Stew only runs on Intel and Apple Silicon based Macs.")
+		fmt.Println("Unsupported architecture! Pakket only runs on Intel and Apple Silicon based Macs.")
 		os.Exit(1)
 	}
 
-	config.GetConfig() // Get config
+	config.GetConfig()   // Get config
+	config.GetLockfile() // Get lockfile
 
 	cmd.Execute()
 }

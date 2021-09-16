@@ -29,7 +29,7 @@ var installCmd = &cobra.Command{
 	Use:     "install package[@version]",
 	Short:   "Install packages",
 	Args:    cobra.MinimumNArgs(1),
-	Example: "stew install golang wget python@3.9",
+	Example: "pakket install golang wget python@3.9",
 	Run: func(cmd *cobra.Command, args []string) {
 		keys := make(map[string]bool)
 		for _, v := range args {
