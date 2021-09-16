@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/stewproject/stew/util/style"
+	"github.com/pakket-project/pakket/util/style"
 )
 
 // Destrutive confirm prompt. Default is no.

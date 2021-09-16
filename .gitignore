@@ -18,5 +18,5 @@
 build
 
 # debug
-stew
+pakket
 cmd/debug.go

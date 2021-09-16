@@ -11,9 +11,10 @@ import (
 
 	"github.com/cavaliercoder/grab"
 	"github.com/mholt/archiver/v3"
-	"github.com/stewproject/stew/internals/errors"
-	"github.com/stewproject/stew/internals/repo"
-	"github.com/stewproject/stew/util"
+	"github.com/pakket-project/pakket/internals/config"
+	"github.com/pakket-project/pakket/internals/errors"
+	"github.com/pakket-project/pakket/internals/repo"
+	"github.com/pakket-project/pakket/util"
 )
 
 // Manuals

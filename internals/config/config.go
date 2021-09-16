@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/pakket-project/pakket/util"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/spf13/viper"
-	"github.com/stewproject/stew/util"
 )
 
 type Mirror struct {

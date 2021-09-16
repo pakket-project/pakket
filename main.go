@@ -5,9 +5,9 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/stewproject/stew/cmd"
-	"github.com/stewproject/stew/internals/config"
-	"github.com/stewproject/stew/util"
+	"github.com/pakket-project/pakket/cmd"
+	"github.com/pakket-project/pakket/internals/config"
+	"github.com/pakket-project/pakket/util"
 )
 
 func main() {

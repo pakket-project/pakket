@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/stewproject/stew/internals/errors"
-	"github.com/stewproject/stew/internals/repo"
-	"github.com/stewproject/stew/util"
+	"github.com/pakket-project/pakket/internals/errors"
+	"github.com/pakket-project/pakket/internals/repo"
+	"github.com/pakket-project/pakket/util"
 )
 
 // for use with GetPackage(). Contains all data needed to install a package.

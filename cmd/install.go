@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/pakket-project/pakket/internals/config"
+	"github.com/pakket-project/pakket/internals/pkg"
+	"github.com/pakket-project/pakket/util"
+	"github.com/pakket-project/pakket/util/style"
 	"github.com/spf13/cobra"
-	"github.com/stewproject/stew/internals/pkg"
-	"github.com/stewproject/stew/util"
-	"github.com/stewproject/stew/util/style"
 )
 
 func init() {
