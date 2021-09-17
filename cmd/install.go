@@ -21,7 +21,6 @@ var (
 	pkgs          []string
 	// errors        []error
 	totalSize int64
-	yes       bool
 )
 
 // repo add
@@ -43,7 +42,10 @@ var installCmd = &cobra.Command{
 			keys[name] = true
 
 			// check if package is already installed (lockfile)
-			// config.LockFile.Packages
+			if v, ok := config.LockFile.Packages[name]; ok {
+				fmt.Printf("%s is already installed\n", v.Name)
+				continue
+			}
 
 			var version *string
 			if len(p) > 1 {
@@ -62,20 +64,23 @@ var installCmd = &cobra.Command{
 			totalSize += pkgData.BinSize
 		}
 
-		fmt.Printf("Packages: %s (%d)\n", strings.Join(pkgs, ", "), len(pkgs))
-		fmt.Printf("Total download size: %s\n", util.ByteToString(totalSize))
+		if len(pkgs) > 0 {
 
-		if !yes {
-			yes = util.Confirm("\nDo you want to continue?")
-		}
+			fmt.Printf("Packages: %s (%d)\n", strings.Join(pkgs, ", "), len(pkgs))
+			fmt.Printf("Total download size: %s\n", util.ByteToString(totalSize))
 
-		if yes {
-			for _, v := range pkgsToInstall {
-				err := pkg.InstallPackage(v)
-				if err != nil {
-					fmt.Printf("\n%s: %s\n", style.Error.Render("Error"), err.Error())
-				} else {
-					fmt.Printf("\nInstalled %s", v.PkgDef.Package.Name)
+			if !yes {
+				yes = util.Confirm("\nDo you want to continue?")
+			}
+
+			if yes {
+				for _, v := range pkgsToInstall {
+					err := pkg.InstallPackage(v)
+					if err != nil {
+						fmt.Printf("\n%s: %s\n", style.Error.Render("Error"), err.Error())
+					} else {
+						fmt.Printf("\nInstalled %s", v.PkgDef.Package.Name)
+					}
 				}
 			}
 		}
