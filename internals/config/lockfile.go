@@ -9,17 +9,18 @@ import (
 )
 
 type LockfileMetadata struct {
-	Name       string `toml:"name"`
-	Version    string `toml:"version"`
-	Checksum   string `toml:"checksum"`
-	Repository string `toml:"repository"`
+	Name       string   `toml:"name"`
+	Version    string   `toml:"version"`
+	Checksum   string   `toml:"checksum"`
+	Repository string   `toml:"repository"`
+	Files      []string `toml:"files"`
 }
 
 type LockfileStruct struct {
-	Packages []LockfileMetadata `toml:"packages" mapstructure:"packages"`
+	Packages map[string]LockfileMetadata `toml:"packages" mapstructure:"packages"`
 }
 
-func readLockfile() (err error) {
+func GetLockfile() (err error) {
 	file, err := os.ReadFile(util.LockfilePath)
 	if errors.Is(err, os.ErrNotExist) {
 		_, err = os.Create(util.LockfilePath)
@@ -41,11 +42,11 @@ func readLockfile() (err error) {
 
 // Add package information to lockfile
 func AddPkgToLockfile(metadata LockfileMetadata) (err error) {
-	err = readLockfile()
-	if err != nil {
-		return err
+	if len(LockFile.Packages) == 0 {
+		LockFile.Packages = make(map[string]LockfileMetadata)
 	}
-	LockFile.Packages = append(LockFile.Packages, metadata)
+
+	LockFile.Packages[metadata.Name] = metadata
 
 	newLockfile, err := toml.Marshal(&LockFile)
 	if err != nil {
@@ -54,4 +55,21 @@ func AddPkgToLockfile(metadata LockfileMetadata) (err error) {
 
 	err = os.WriteFile(util.LockfilePath, newLockfile, 0666)
 	return err
+}
+
+// Remove package information from lockfile
+func RemovePkgFromLockfile(name string) (lockfileData LockfileMetadata, err error) {
+	if _, ok := LockFile.Packages[name]; !ok {
+		return LockfileMetadata{}, errors.New("package not found")
+	}
+	lockfile := LockFile.Packages[name]
+	delete(LockFile.Packages, name)
+
+	newLockfile, err := toml.Marshal(&LockFile)
+	if err != nil {
+		return LockfileMetadata{}, err
+	}
+
+	err = os.WriteFile(util.LockfilePath, newLockfile, 0666)
+	return lockfile, err
 }
