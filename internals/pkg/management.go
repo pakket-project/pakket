@@ -96,6 +96,7 @@ func InstallPackage(pkg PkgData) (err error) {
 	}
 
 	filesToMove := make(map[string]string)
+	var finalPaths []string
 
 	err = filepath.Walk(savePath, func(filePath string, f os.FileInfo, err error) error {
 		if filePath == savePath {
@@ -162,6 +163,7 @@ func InstallPackage(pkg PkgData) (err error) {
 				return err
 			}
 
+			finalPaths = append(finalPaths, newPath)
 			err = os.Rename(oldPath, newPath)
 			if err != nil {
 				return err
@@ -170,9 +172,26 @@ func InstallPackage(pkg PkgData) (err error) {
 	}
 
 	// add to lockfile
-	// err = config.AddPkgToLockfile(config.LockfileMetadata{Name: pkg.PkgDef.Package.Name, Version: pkg.Version, Hash: pkg.PlfData.Hash, Repository: pkg.Repository})
+	err = config.AddPkgToLockfile(config.LockfileMetadata{Name: pkg.PkgDef.Package.Name, Version: pkg.Version, Checksum: pkg.PlfData.Checksum, Repository: pkg.Repository, Files: finalPaths})
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func RemovePackage(pkg string) (err error) {
+	// remove from lockfile
+	lockfile, err := config.RemovePkgFromLockfile(pkg)
+	if err != nil {
+		return err
+	}
+
+	for _, path := range lockfile.Files {
+		err = os.Remove(path)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
