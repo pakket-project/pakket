@@ -15,7 +15,7 @@ var (
 
 var rootCmd = &cobra.Command{
 	Use:   "pakket",
-	Short: "pakket is a package manager for macOS. Contribute: https://github.com/pakket-project/pakket",
+	Short: "pakket is a package manager for macOS.\nContribute: https://github.com/pakket-project/pakket",
 }
 
 func Execute() {
