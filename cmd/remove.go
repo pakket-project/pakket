@@ -25,6 +25,7 @@ var removeCmd = &cobra.Command{
 	Short:   "Remove packages",
 	Args:    cobra.MinimumNArgs(1),
 	Example: "pakket remove golang wget python",
+	Aliases: []string{"rm", "uninstall"},
 	Run: func(cmd *cobra.Command, args []string) {
 		keys := make(map[string]bool)
 		for _, v := range args {
