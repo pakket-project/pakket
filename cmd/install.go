@@ -79,7 +79,7 @@ var installCmd = &cobra.Command{
 					if err != nil {
 						fmt.Printf("\n%s: %s\n", style.Error.Render("Error"), err.Error())
 					} else {
-						fmt.Printf("\nInstalled %s", v.PkgDef.Package.Name)
+						fmt.Printf("Installed %s\n", v.PkgDef.Package.Name)
 					}
 				}
 			}
