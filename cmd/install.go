@@ -14,6 +14,7 @@ import (
 func init() {
 	rootCmd.AddCommand(installCmd)
 	installCmd.Flags().BoolVarP(&yes, "yes", "y", false, "skips all confirmation prompts")
+	installCmd.Flags().BoolVarP(&force, "force", "f", false, "force")
 }
 
 var (
@@ -75,7 +76,7 @@ var installCmd = &cobra.Command{
 
 			if yes {
 				for _, v := range pkgsToInstall {
-					err := pkg.InstallPackage(v)
+					err := pkg.InstallPackage(v, force)
 					if err != nil {
 						fmt.Printf("\n%s: %s\n", style.Error.Render("Error"), err.Error())
 					} else {

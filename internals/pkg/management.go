@@ -73,7 +73,8 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 
 	if downloadChecksum != pkg.PlfData.Checksum {
 		return errors.InvalidChecksum{
-			Mirror: repo.CorePackagesURL,
+			Package: pkg.PkgDef.Package.Name,
+			Mirror:  repo.CorePackagesURL,
 		}
 	}
 
@@ -86,7 +87,7 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 	return err
 }
 
-func InstallPackage(pkg PkgData) (err error) {
+func InstallPackage(pkg PkgData, force bool) (err error) {
 	savePath := path.Join(util.DownloadPath, pkg.PkgDef.Package.Name)
 
 	err = DownloadPackage(pkg, savePath) // Download package, save tar to tarPath
@@ -149,7 +150,7 @@ func InstallPackage(pkg PkgData) (err error) {
 		var confirm bool
 
 		exists = util.DoesPathExist(newPath)
-		if exists {
+		if exists && !force {
 			confirm = util.DestructiveConfirm(fmt.Sprintf("File %s already exists. Overwrite?", newPath))
 			err := os.Remove(newPath)
 			if err != nil {
@@ -157,7 +158,15 @@ func InstallPackage(pkg PkgData) (err error) {
 			}
 		}
 
-		if (!exists) || (exists && confirm) {
+		if exists && force {
+			fmt.Printf("file %s already exists but force, overwriting...\n", newPath)
+			err := os.Remove(newPath)
+			if err != nil {
+				return err
+			}
+		}
+
+		if (!exists) || (exists && confirm) || (exists && force) {
 			err = os.MkdirAll(path.Dir(newPath), 0755)
 			if err != nil {
 				return err

@@ -11,6 +11,7 @@ type Pakket struct {
 var (
 	pakket = Pakket{Version: "v0.0.1"}
 	yes    bool
+	force  bool
 )
 
 var rootCmd = &cobra.Command{
