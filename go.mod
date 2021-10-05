@@ -24,7 +24,6 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/cobra v1.2.1
-	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.8.1
 	github.com/theckman/yacspin v0.8.0
 	github.com/ulikunitz/xz v0.5.10 // indirect
