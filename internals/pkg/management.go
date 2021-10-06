@@ -88,6 +88,11 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 }
 
 func InstallPackage(pkg PkgData, force bool) (err error) {
+	// check if package is already installed
+	if v, ok := config.LockFile.Packages[pkg.PkgDef.Package.Name]; ok {
+		return fmt.Errorf("%s is already installed", v.Name)
+	}
+
 	savePath := path.Join(util.DownloadPath, pkg.PkgDef.Package.Name)
 
 	err = DownloadPackage(pkg, savePath) // Download package, save tar to tarPath
