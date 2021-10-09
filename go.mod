@@ -8,13 +8,14 @@ require (
 	github.com/charmbracelet/lipgloss v0.4.0
 	github.com/fatih/color v1.12.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
+	github.com/go-vela/archiver/v3 v3.4.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/magefile/mage v1.11.0
 	github.com/mattn/go-isatty v0.0.14 // indirect
-	github.com/mholt/archiver/v3 v3.5.0
+	github.com/go-vela/archiver/v3 v3.5.0
 	github.com/mitchellh/mapstructure v1.4.2 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/nwaples/rardecode v1.1.2 // indirect

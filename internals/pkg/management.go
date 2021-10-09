@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/cavaliercoder/grab"
-	"github.com/mholt/archiver/v3"
+	"github.com/go-vela/archiver/v3"
 	"github.com/pakket-project/pakket/internals/config"
 	"github.com/pakket-project/pakket/internals/errors"
 	"github.com/pakket-project/pakket/internals/repo"
