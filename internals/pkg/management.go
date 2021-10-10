@@ -150,13 +150,16 @@ func InstallPackage(pkg PkgData, force bool) (err error) {
 		return err
 	}
 
+	always := false
 	for oldPath, newPath := range filesToMove {
 		var exists bool
 		var confirm bool
 
 		exists = util.DoesPathExist(newPath)
 		if exists && !force {
-			confirm = util.DestructiveConfirm(fmt.Sprintf("File %s already exists. Overwrite?", newPath))
+			if !always {
+				confirm, always = util.DestructiveConfirm(fmt.Sprintf("File %s already exists. Overwrite?", newPath), true)
+			}
 			err := os.Remove(newPath)
 			if err != nil {
 				return err
@@ -164,14 +167,13 @@ func InstallPackage(pkg PkgData, force bool) (err error) {
 		}
 
 		if exists && force {
-			fmt.Printf("file %s already exists but force, overwriting...\n", newPath)
 			err := os.Remove(newPath)
 			if err != nil {
 				return err
 			}
 		}
 
-		if (!exists) || (exists && confirm) || (exists && force) {
+		if (!exists) || (exists && confirm) || (exists && force) || (exists && always) {
 			err = os.MkdirAll(path.Dir(newPath), 0755)
 			if err != nil {
 				return err
