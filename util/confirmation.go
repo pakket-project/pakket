@@ -15,13 +15,18 @@ func DestructiveConfirm(prompt string, always bool) (yes bool, alwaysYes bool) {
 	if always {
 		confirmPrompt = fmt.Sprintf("%s [(y)es/(a)lways/(N)o] ", style.Error.Render(prompt))
 	} else {
-		confirmPrompt = fmt.Sprintf("%s [(y)es/(a)lways/(N)o] ", style.Error.Render(prompt))
+		confirmPrompt = fmt.Sprintf("%s [(y)es/(N)o] ", style.Error.Render(prompt))
 	}
 
 	fmt.Print(confirmPrompt)
 	fmt.Scanf("%s", &confirmation)
 	confirmation = strings.ToLower(confirmation)
-	return confirmation == "y" || confirmation == "yes", confirmation == "a" || confirmation == "always"
+
+	if always {
+		return confirmation == "y" || confirmation == "yes" || confirmation == "a" || confirmation == "always", confirmation == "a" || confirmation == "always"
+	} else {
+		return confirmation == "y" || confirmation == "yes", false
+	}
 }
 
 // Confirm prompt. Default is yes.
