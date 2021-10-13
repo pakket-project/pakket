@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"os"
 	"path"
@@ -13,7 +12,6 @@ import (
 	"github.com/go-vela/archiver/v3"
 	"github.com/pakket-project/pakket/internals/config"
 	"github.com/pakket-project/pakket/internals/errors"
-	"github.com/pakket-project/pakket/internals/repo"
 	"github.com/pakket-project/pakket/util"
 )
 
@@ -59,6 +57,7 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 
 	// Download tar
 	resp, err := grab.Get(util.DownloadPath, pkg.PkgUrl)
+	defer os.RemoveAll(resp.Filename)
 	if err != nil {
 		return err
 	}
@@ -68,13 +67,11 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 		return err
 	}
 
-	checksumBytes := sha256.Sum256(fileData)
-	downloadChecksum := hex.EncodeToString(checksumBytes[:])
+	downloadChecksum := fmt.Sprintf("%x", sha256.Sum256(fileData))
 
 	if downloadChecksum != pkg.PlfData.Checksum {
 		return errors.InvalidChecksum{
 			Package: pkg.PkgDef.Package.Name,
-			Mirror:  repo.CorePackagesURL,
 		}
 	}
 

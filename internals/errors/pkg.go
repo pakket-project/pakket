@@ -23,10 +23,9 @@ func (err VersionNotFoundError) Error() string {
 
 // invalid checksum (thrown if remote hash differs from repository hash)
 type InvalidChecksum struct {
-	Mirror  string
 	Package string
 }
 
 func (err InvalidChecksum) Error() string {
-	return fmt.Sprintf("Cannot validate checksum. It is possible somebody has tampered with the file on the mirror, or that you are the victim of a MITM-attack.\nPackage: %s - Mirror: p%s", err.Package, err.Mirror)
+	return fmt.Sprintf("Cannot validate checksum. It is possible somebody has tampered with the file on the mirror, or that you are the victim of a MITM-attack.Package: %s", err.Package)
 }
