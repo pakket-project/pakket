@@ -92,6 +92,12 @@ func InstallPackage(pkg PkgData, force bool) (err error) {
 
 	savePath := path.Join(util.DownloadPath, pkg.PkgDef.Package.Name)
 
+	//run preinstall script
+	err = DownloadScript("preinstall.bash", pkg, savePath+"/preinstall.bash")
+	if err == nil {
+		RunScript("preinstall", pkg, savePath)
+	}
+
 	err = DownloadPackage(pkg, savePath) // Download package, save tar to tarPath
 	defer os.RemoveAll(savePath)
 	if err != nil {
@@ -188,6 +194,13 @@ func InstallPackage(pkg PkgData, force bool) (err error) {
 	err = config.AddPkgToLockfile(config.LockfileMetadata{Name: pkg.PkgDef.Package.Name, Version: pkg.Version, Checksum: pkg.PlfData.Checksum, Repository: pkg.Repository, Files: finalPaths})
 	if err != nil {
 		return err
+	}
+
+	//run postinstall script
+	err = DownloadScript("postinstall.bash", pkg, savePath+"/postinstall.bash")
+	if err == nil {
+		RunScript("postinstall", pkg, savePath)
+		fmt.Println("")
 	}
 
 	return nil
