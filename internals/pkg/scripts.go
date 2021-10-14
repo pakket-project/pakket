@@ -25,8 +25,8 @@ func executeScript(script string) (err error) {
 	cmd.Env = os.Environ()
 
 	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
+	// cmd.Stdin = os.Stdin
+	// cmd.Stdout = os.Stdout
 
 	return cmd.Run()
 }
