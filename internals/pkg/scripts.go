@@ -10,11 +10,34 @@ import (
 	"github.com/pakket-project/pakket/util/style"
 )
 
-func DownloadScript(name string, pkg PkgData, savePath string) (err error) {
-	url := fmt.Sprintf("%s/%s/%s/%s", repo.CoreRepositoryURL, pkg.PkgDef.Package.Name, pkg.PkgDef.Package.Version, name)
-	_, err = grab.Get(savePath, url)
+func HandleScript(name string, pkg PkgData, savePath string) (err error) {
+	path := fmt.Sprintf("%s/%s.bash", savePath, name)
 
-	return err
+	exists, err := DownloadScript(name+".bash", pkg, path)
+	if err != nil {
+		return err
+	}
+
+	if exists {
+		err := RunScript(name, pkg, savePath)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func DownloadScript(name string, pkg PkgData, savePath string) (exists bool, err error) {
+	url := fmt.Sprintf("%s/%s/%s/%s", repo.CoreRepositoryURL, pkg.PkgDef.Package.Name, pkg.PkgDef.Package.Version, name)
+	resp, err := grab.Get(savePath, url)
+
+	if !(resp.HTTPResponse.StatusCode == 404 || resp.HTTPResponse.StatusCode == 200) {
+		return false, err
+	}
+
+	return resp.HTTPResponse.StatusCode == 200, nil
 }
 
 func RunScript(name string, pkg PkgData, savePath string) (err error) {

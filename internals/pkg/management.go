@@ -93,10 +93,7 @@ func InstallPackage(pkg PkgData, force bool) (err error) {
 	savePath := path.Join(util.DownloadPath, pkg.PkgDef.Package.Name)
 
 	//run preinstall script
-	err = DownloadScript("preinstall.bash", pkg, savePath+"/preinstall.bash")
-	if err == nil {
-		RunScript("preinstall", pkg, savePath)
-	}
+	HandleScript("preinstall", pkg, savePath)
 
 	err = DownloadPackage(pkg, savePath) // Download package, save tar to tarPath
 	defer os.RemoveAll(savePath)
@@ -197,11 +194,7 @@ func InstallPackage(pkg PkgData, force bool) (err error) {
 	}
 
 	//run postinstall script
-	err = DownloadScript("postinstall.bash", pkg, savePath+"/postinstall.bash")
-	if err == nil {
-		RunScript("postinstall", pkg, savePath)
-		fmt.Println("")
-	}
+	HandleScript("postinstall", pkg, savePath)
 
 	return nil
 }
