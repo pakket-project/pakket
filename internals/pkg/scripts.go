@@ -34,13 +34,13 @@ func executeScript(script string) (err error) {
 func HandleScript(name string, pkg PkgData, savePath string) (err error) {
 	path := fmt.Sprintf("%s/%s.bash", savePath, name)
 
-	exists, err := DownloadScript(name+".bash", pkg, path)
+	exists, err := downloadScript(name+".bash", pkg, path)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		err := RunScript(name, pkg, savePath)
+		err := runScript(name, pkg, savePath)
 
 		if err != nil {
 			return err
@@ -50,7 +50,7 @@ func HandleScript(name string, pkg PkgData, savePath string) (err error) {
 	return nil
 }
 
-func DownloadScript(name string, pkg PkgData, savePath string) (exists bool, err error) {
+func downloadScript(name string, pkg PkgData, savePath string) (exists bool, err error) {
 	url := fmt.Sprintf("%s/%s/%s/%s", repo.CoreRepositoryURL, pkg.PkgDef.Package.Name, pkg.PkgDef.Package.Version, name)
 	resp, err := grab.Get(savePath, url)
 
@@ -61,7 +61,7 @@ func DownloadScript(name string, pkg PkgData, savePath string) (exists bool, err
 	return resp.HTTPResponse.StatusCode == 200, nil
 }
 
-func RunScript(name string, pkg PkgData, savePath string) (err error) {
+func runScript(name string, pkg PkgData, savePath string) (err error) {
 	url := style.Link.Render(fmt.Sprintf("%s/%s.bash", pkg.RepoURL, name))
 	fmt.Printf("\nPackage %s has a %s script: %s \n", pkg.PkgDef.Package.Name, name, url)
 
