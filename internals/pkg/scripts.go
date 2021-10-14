@@ -2,13 +2,34 @@ package pkg
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 
 	"github.com/cavaliercoder/grab"
 	"github.com/pakket-project/pakket/internals/repo"
-	"github.com/pakket-project/pakket/internals/runner"
 	"github.com/pakket-project/pakket/util"
 	"github.com/pakket-project/pakket/util/style"
 )
+
+func executeScript(script string) (err error) {
+	// make sure permissions are set correctly
+	err = os.Chmod(script, 0755)
+	if err != nil {
+		return err
+	}
+
+	// run the script
+	cmd := exec.Command("bash", "-euxo", "pipefail", script)
+
+	// set the environment variables
+	cmd.Env = os.Environ()
+
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+
+	return cmd.Run()
+}
 
 func HandleScript(name string, pkg PkgData, savePath string) (err error) {
 	path := fmt.Sprintf("%s/%s.bash", savePath, name)
@@ -52,5 +73,5 @@ func RunScript(name string, pkg PkgData, savePath string) (err error) {
 		return nil
 	}
 
-	return runner.RunScript(fmt.Sprintf("%s/%s.bash", savePath, name))
+	return executeScript(fmt.Sprintf("%s/%s.bash", savePath, name))
 }
