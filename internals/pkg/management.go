@@ -56,7 +56,7 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 	}
 
 	// Download tar
-	resp, err := grab.Get(util.DownloadPath, pkg.PkgUrl)
+	resp, err := grab.Get(util.DownloadPath, pkg.TarURL)
 	defer os.RemoveAll(resp.Filename)
 	if err != nil {
 		return err
@@ -92,8 +92,11 @@ func InstallPackage(pkg PkgData, force bool) (err error) {
 
 	savePath := path.Join(util.DownloadPath, pkg.PkgDef.Package.Name)
 
-	//run preinstall script
-	HandleScript("preinstall", pkg, savePath)
+	// run preinstall script
+	err = HandleScript("preinstall", pkg, savePath)
+	if err != nil {
+		return err
+	}
 
 	err = DownloadPackage(pkg, savePath) // Download package, save tar to tarPath
 	defer os.RemoveAll(savePath)
@@ -194,7 +197,10 @@ func InstallPackage(pkg PkgData, force bool) (err error) {
 	}
 
 	//run postinstall script
-	HandleScript("postinstall", pkg, savePath)
+	err = HandleScript("postinstall", pkg, savePath)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

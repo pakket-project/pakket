@@ -16,8 +16,8 @@ type PkgData struct {
 	PkgDef     PackageDefinition
 	VerData    VersionMetadata
 	PlfData    PlatformData
-	PkgUrl     string
-	PkgRepoUrl string
+	TarURL     string
+	RepoURL    string
 	Version    string
 	Repository string
 	BinSize    int64
@@ -87,7 +87,7 @@ func GetPackage(pkgName string, pkgVersion *string) (pkgData *PkgData, err error
 	// get pkg size
 	size, err := GetPackageSize(pkgUrl)
 
-	return &PkgData{PkgDef: pkgDef, VerData: verData, PlfData: plfData, Repository: "core", Version: version, PkgUrl: pkgUrl, PkgRepoUrl: pkgRepoUrl, BinSize: size}, err
+	return &PkgData{PkgDef: pkgDef, VerData: verData, PlfData: plfData, Repository: "core", Version: version, TarURL: pkgUrl, RepoURL: pkgRepoUrl, BinSize: size}, err
 }
 
 func GetPackageSize(url string) (bytes int64, err error) {

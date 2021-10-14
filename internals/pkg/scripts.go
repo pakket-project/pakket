@@ -62,7 +62,7 @@ func DownloadScript(name string, pkg PkgData, savePath string) (exists bool, err
 }
 
 func RunScript(name string, pkg PkgData, savePath string) (err error) {
-	url := style.Link.Render(fmt.Sprintf("%s/%s.bash", pkg.PkgRepoUrl, name))
+	url := style.Link.Render(fmt.Sprintf("%s/%s.bash", pkg.RepoURL, name))
 	fmt.Printf("\nPackage %s has a %s script: %s \n", pkg.PkgDef.Package.Name, name, url)
 
 	yes := util.Confirm(fmt.Sprintf("Allow package %s to run a %s script?", pkg.PkgDef.Package.Name, name))
