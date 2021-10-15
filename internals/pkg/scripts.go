@@ -58,7 +58,7 @@ func downloadScript(name string, pkg PkgData, savePath string) (exists bool, err
 		return false, err
 	}
 
-	return resp.HTTPResponse.StatusCode == 200, err
+	return resp.HTTPResponse.StatusCode == 200, nil
 }
 
 func runScript(name string, pkg PkgData, savePath string) (err error) {
