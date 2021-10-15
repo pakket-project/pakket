@@ -11,26 +11,6 @@ import (
 	"github.com/pakket-project/pakket/util/style"
 )
 
-func executeScript(script string) (err error) {
-	// make sure permissions are set correctly
-	err = os.Chmod(script, 0755)
-	if err != nil {
-		return err
-	}
-
-	// run the script
-	cmd := exec.Command("bash", "-euxo", "pipefail", script)
-
-	// set the environment variables
-	cmd.Env = os.Environ()
-
-	cmd.Stderr = os.Stderr
-	// cmd.Stdin = os.Stdin
-	// cmd.Stdout = os.Stdout
-
-	return cmd.Run()
-}
-
 func HandleScript(name string, pkg PkgData, savePath string, yes bool) (err error) {
 	path := fmt.Sprintf("%s/%s.bash", savePath, name)
 
@@ -75,5 +55,27 @@ func runScript(name string, pkg PkgData, savePath string, yes bool) (err error) 
 		return nil
 	}
 
-	return executeScript(fmt.Sprintf("%s/%s.bash", savePath, name))
+	script := fmt.Sprintf("%s/%s.bash", savePath, name)
+
+	// make sure permissions are set correctly
+	err = os.Chmod(script, 0755)
+	if err != nil {
+		return err
+	}
+
+	// run the script
+	cmd := exec.Command("bash", "-euxo", "pipefail", script)
+
+	// set the environment variables
+	var scriptEnv []string
+
+	scriptEnv = append(scriptEnv, os.Environ()...)
+	scriptEnv = append(scriptEnv, "PAKKET_PREFIX="+util.Prefix)
+	cmd.Env = scriptEnv
+
+	cmd.Stderr = os.Stderr
+	// cmd.Stdin = os.Stdin
+	// cmd.Stdout = os.Stdout
+
+	return cmd.Run()
 }
