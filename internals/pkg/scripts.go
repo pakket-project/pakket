@@ -31,7 +31,7 @@ func executeScript(script string) (err error) {
 	return cmd.Run()
 }
 
-func HandleScript(name string, pkg PkgData, savePath string) (err error) {
+func HandleScript(name string, pkg PkgData, savePath string, yes bool) (err error) {
 	path := fmt.Sprintf("%s/%s.bash", savePath, name)
 
 	exists, err := downloadScript(name+".bash", pkg, path)
@@ -40,7 +40,7 @@ func HandleScript(name string, pkg PkgData, savePath string) (err error) {
 	}
 
 	if exists {
-		err := runScript(name, pkg, savePath)
+		err := runScript(name, pkg, savePath, yes)
 
 		if err != nil {
 			return err
@@ -61,12 +61,14 @@ func downloadScript(name string, pkg PkgData, savePath string) (exists bool, err
 	return resp.HTTPResponse.StatusCode == 200, nil
 }
 
-func runScript(name string, pkg PkgData, savePath string) (err error) {
+func runScript(name string, pkg PkgData, savePath string, yes bool) (err error) {
 	url := style.Link.Render(fmt.Sprintf("%s/%s.bash", pkg.RepoURL, name))
 	fmt.Printf("\nPackage %s has a %s script: %s \n", pkg.PkgDef.Package.Name, name, url)
 
-	yes := util.Confirm(fmt.Sprintf("Allow package %s to run a %s script?", pkg.PkgDef.Package.Name, name))
-	fmt.Print("\n")
+	if !yes {
+		yes = util.Confirm(fmt.Sprintf("Allow package %s to run a %s script?", pkg.PkgDef.Package.Name, name))
+		fmt.Print("\n")
+	}
 
 	if !yes {
 		fmt.Printf("Not running %s script. Please note this may cause errors when using the package.\n", name)

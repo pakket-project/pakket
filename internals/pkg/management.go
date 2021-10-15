@@ -84,7 +84,7 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 	return err
 }
 
-func InstallPackage(pkg PkgData, force bool) (err error) {
+func InstallPackage(pkg PkgData, force bool, yes bool) (err error) {
 	// check if package is already installed
 	if v, ok := config.LockFile.Packages[pkg.PkgDef.Package.Name]; ok {
 		return fmt.Errorf("%s is already installed", v.Name)
@@ -93,7 +93,7 @@ func InstallPackage(pkg PkgData, force bool) (err error) {
 	savePath := path.Join(util.DownloadPath, pkg.PkgDef.Package.Name)
 
 	// run preinstall script
-	err = HandleScript("preinstall", pkg, savePath)
+	err = HandleScript("preinstall", pkg, savePath, yes)
 	if err != nil {
 		return err
 	}
@@ -197,7 +197,7 @@ func InstallPackage(pkg PkgData, force bool) (err error) {
 	}
 
 	//run postinstall script
-	err = HandleScript("postinstall", pkg, savePath)
+	err = HandleScript("postinstall", pkg, savePath, yes)
 	if err != nil {
 		return err
 	}
