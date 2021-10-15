@@ -54,13 +54,11 @@ func downloadScript(name string, pkg PkgData, savePath string) (exists bool, err
 	url := fmt.Sprintf("%s/%s/%s/%s", repo.CoreRepositoryURL, pkg.PkgDef.Package.Name, pkg.PkgDef.Package.Version, name)
 	resp, err := grab.Get(savePath, url)
 
-	if resp.HTTPResponse.StatusCode == 404 {
-		return false, err
-	} else if err != nil {
+	if !(resp.HTTPResponse.StatusCode == 404 || resp.HTTPResponse.StatusCode == 200) {
 		return false, err
 	}
 
-	return true, nil
+	return resp.HTTPResponse.StatusCode == 200, err
 }
 
 func runScript(name string, pkg PkgData, savePath string) (err error) {

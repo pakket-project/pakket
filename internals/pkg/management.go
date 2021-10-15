@@ -78,7 +78,7 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 	// unarchive
 	err = archiver.Unarchive(resp.Filename, savePath)
 	if err != nil {
-		return
+		return err
 	}
 
 	return err
