@@ -90,7 +90,7 @@ func InstallPackage(pkg PkgData, force bool, yes bool) (err error) {
 			return err
 		}
 
-		filesToMove[filePath] = path.Join("/", "usr", "local", localPath)
+		filesToMove[filePath] = path.Join(util.Prefix, localPath)
 
 		return err
 	})

@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// TODO: these need to be defined in the config
 var (
 	// Path that houses config & repositores
 	PakketPath = "/etc/pakket"
@@ -19,6 +20,8 @@ var (
 	RepoPath = path.Join(PakketPath, "repositories")
 	// Path to temporary downloads/clones
 	DownloadPath = "/var/tmp/pakket"
+	// Prefix
+	Prefix = "/usr/local"
 )
 
 var (
