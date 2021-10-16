@@ -6,6 +6,7 @@ import (
 	"os/exec"
 
 	"github.com/cavaliercoder/grab"
+	"github.com/pakket-project/pakket/internals/config"
 	"github.com/pakket-project/pakket/internals/repo"
 	"github.com/pakket-project/pakket/util"
 	"github.com/pakket-project/pakket/util/style"
@@ -70,7 +71,7 @@ func runScript(name string, pkg PkgData, savePath string, yes bool) (err error) 
 	var scriptEnv []string
 
 	scriptEnv = append(scriptEnv, os.Environ()...)
-	scriptEnv = append(scriptEnv, "PAKKET_PREFIX="+util.Prefix)
+	scriptEnv = append(scriptEnv, "PAKKET_PREFIX="+config.C.Paths.Prefix)
 	cmd.Env = scriptEnv
 
 	cmd.Stderr = os.Stderr

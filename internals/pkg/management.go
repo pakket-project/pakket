@@ -17,13 +17,13 @@ import (
 
 // download and unarchive package.
 func DownloadPackage(pkg PkgData, savePath string) (err error) {
-	err = os.MkdirAll(util.DownloadPath, 0770)
+	err = os.MkdirAll(config.C.Paths.Downloads, 0770)
 	if err != nil {
 		return
 	}
 
 	// Download tar
-	resp, err := grab.Get(util.DownloadPath, pkg.TarURL)
+	resp, err := grab.Get(config.C.Paths.Downloads, pkg.TarURL)
 	defer os.RemoveAll(resp.Filename)
 	if err != nil {
 		return err
@@ -57,7 +57,7 @@ func InstallPackage(pkg PkgData, force bool, yes bool) (err error) {
 		return fmt.Errorf("%s is already installed", v.Name)
 	}
 
-	savePath := path.Join(util.DownloadPath, pkg.PkgDef.Package.Name)
+	savePath := path.Join(config.C.Paths.Downloads, pkg.PkgDef.Package.Name)
 
 	// run preinstall script
 	err = HandleScript("preinstall", pkg, savePath, yes)
@@ -90,7 +90,7 @@ func InstallPackage(pkg PkgData, force bool, yes bool) (err error) {
 			return err
 		}
 
-		filesToMove[filePath] = path.Join(util.Prefix, localPath)
+		filesToMove[filePath] = path.Join(config.C.Paths.Prefix, localPath)
 
 		return err
 	})

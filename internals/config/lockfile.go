@@ -4,8 +4,11 @@ import (
 	"errors"
 	"os"
 
-	"github.com/pakket-project/pakket/util"
 	"github.com/pelletier/go-toml/v2"
+)
+
+var (
+	LockFile LockfileStruct
 )
 
 type LockfileMetadata struct {
@@ -21,13 +24,13 @@ type LockfileStruct struct {
 }
 
 func GetLockfile() (err error) {
-	file, err := os.ReadFile(util.LockfilePath)
+	file, err := os.ReadFile(LockfilePath)
 	if errors.Is(err, os.ErrNotExist) {
-		_, err = os.Create(util.LockfilePath)
+		_, err = os.Create(LockfilePath)
 		if err != nil {
 			return err
 		}
-		file, err = os.ReadFile(util.LockfilePath)
+		file, err = os.ReadFile(LockfilePath)
 		if err != nil {
 			return err
 		}
@@ -53,7 +56,7 @@ func AddPkgToLockfile(metadata LockfileMetadata) (err error) {
 		return err
 	}
 
-	err = os.WriteFile(util.LockfilePath, newLockfile, 0666)
+	err = os.WriteFile(LockfilePath, newLockfile, 0666)
 	return err
 }
 
@@ -70,6 +73,6 @@ func RemovePkgFromLockfile(name string) (lockfileData LockfileMetadata, err erro
 		return LockfileMetadata{}, err
 	}
 
-	err = os.WriteFile(util.LockfilePath, newLockfile, 0666)
+	err = os.WriteFile(LockfilePath, newLockfile, 0666)
 	return lockfile, err
 }

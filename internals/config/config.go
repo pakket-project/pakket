@@ -1,12 +1,21 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"path"
 
-	"github.com/pakket-project/pakket/util"
 	"github.com/pelletier/go-toml/v2"
-	"github.com/spf13/viper"
+)
+
+var (
+	// path that houses config, lockfile, etc
+	ConfigPath = "/etc/pakket"
+	// Path to main pakket config
+	ConfigFile = path.Join(ConfigPath, "config.toml")
+	// Path to lockfile w/ currently installed packages
+	LockfilePath = path.Join(ConfigPath, "lockfile.toml")
 )
 
 type Mirror struct {
@@ -14,82 +23,104 @@ type Mirror struct {
 	Name string `toml:"name"`
 }
 
+type Paths struct {
+	// absolute path to temp downloads directory (ie /var/tmp/pakket)
+	Downloads string `toml:"downloads"`
+	// installation prefix. must be "/usr/local", other values are currently not supported
+	Prefix string `toml:"prefix"`
+}
+
 type ConfigStruct struct {
 	Mirrors   []Mirror `toml:"mirrors"`
 	Community bool     `toml:"community"`
+	Paths     Paths    `toml:"paths"`
 }
 
 var (
-	// Loaded config
-	Config   ConfigStruct
-	LockFile LockfileStruct
+	// Config
+	C ConfigStruct
 )
 
-// Get main pakket config
-func GetConfig() ConfigStruct {
-	viper.SetConfigName("config")
-	viper.SetConfigType("toml")
-	viper.AddConfigPath(util.PakketPath)
+func GetConfig() (err error) {
+	var file []byte
+	file, err = os.ReadFile(ConfigFile)
+	if errors.Is(err, os.ErrNotExist) {
+		_, err = os.Create(ConfigFile)
 
-	err := viper.ReadInConfig()
-	// If config is not found
-	if _, errNotExists := err.(viper.ConfigFileNotFoundError); errNotExists {
-		// Check if PakketPath exists, if not, creates directory
-		if exists := util.DoesPathExist(util.PakketPath); !exists {
-			panic(fmt.Errorf("%s doesn't exist", util.PakketPath))
-		}
-
-		_, err = os.Create(util.ConfigFile) // create config file
 		if err != nil {
-			panic(err)
+			return err
 		}
 
-		err = viper.ReadInConfig() // read file again
+		file, err = os.ReadFile(ConfigFile)
 		if err != nil {
-			panic(fmt.Errorf("fatal error reading config file: %s", err))
+			return err
 		}
-	} else if err != nil {
-		panic(fmt.Errorf("fatal error reading config file: %s", err))
 	}
 
-	err = viper.Unmarshal(&Config)
-	if err != nil {
-		panic(fmt.Errorf("fatal error parsing config file: %s", err))
+	err = toml.Unmarshal(file, &C)
+
+	if C.Paths.Prefix != "/usr/local" {
+		fmt.Println("prefix must be /usr/local, changing it for you...")
+
+		C.Paths.Prefix = "/usr/local"
+		err := WriteConfig()
+		if err != nil {
+			return err
+		}
 	}
 
-	return Config
+	if len(C.Mirrors) == 0 {
+		fmt.Println("no mirrors, automatically adding one...")
+
+		C.Mirrors = append(C.Mirrors, Mirror{URL: "https://core.pakket.sh", Name: "Main Pakket mirror"})
+		err := WriteConfig()
+		if err != nil {
+			return err
+		}
+	}
+	return err
 }
 
-// Add repository to config
-func AddMirror(mirror Mirror) error {
-	Config.Mirrors = append(Config.Mirrors, mirror)
-
-	config, err := toml.Marshal(&Config)
+func WriteConfig() (err error) {
+	newConfig, err := toml.Marshal(&C)
 	if err != nil {
 		return err
 	}
 
-	err = os.WriteFile(util.ConfigFile, config, 0660)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	err = os.WriteFile(ConfigFile, newConfig, 0666)
+	return err
 }
 
-// Delete repository
-func DelRepo(configIndex int) error {
-	Config.Mirrors = append(Config.Mirrors[:configIndex], Config.Mirrors[configIndex+1:]...)
+// // Add repository to config
+// func AddMirror(mirror Mirror) error {
+// 	Config.Mirrors = append(Config.Mirrors, mirror)
 
-	config, err := toml.Marshal(&Config)
-	if err != nil {
-		return err
-	}
+// 	config, err := toml.Marshal(&Config)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	err = os.WriteFile(util.ConfigFile, config, 0660)
-	if err != nil {
-		return err
-	}
+// 	err = os.WriteFile(util.ConfigFile, config, 0660)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
+
+// // Delete mirror
+// func DelMirror(configIndex int) error {
+// 	Config.Mirrors = append(Config.Mirrors[:configIndex], Config.Mirrors[configIndex+1:]...)
+
+// 	config, err := toml.Marshal(&Config)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	err = os.WriteFile(util.ConfigFile, config, 0660)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return nil
+// }

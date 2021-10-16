@@ -4,28 +4,11 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"path"
 	"strings"
 )
 
-// TODO: these need to be defined in the config
 var (
-	// Path that houses config & repositores
-	PakketPath = "/etc/pakket"
-	// Path to main pakket config
-	ConfigFile = path.Join(PakketPath, "config.toml")
-	// Path to lockfile w/ currently installed packages
-	LockfilePath = path.Join(PakketPath, "lockfile.toml")
-	// Path to pakket repositories
-	RepoPath = path.Join(PakketPath, "repositories")
-	// Path to temporary downloads/clones
-	DownloadPath = "/var/tmp/pakket"
-	// Prefix
-	Prefix = "/usr/local"
-)
-
-var (
-	// is either "silicon" or "intel"
+	// either "intel" or "silicon"
 	Arch string
 )
 

@@ -75,13 +75,14 @@ func GetPackage(pkgName string, pkgVersion *string) (pkgData *PkgData, err error
 	var plfData PlatformData
 
 	// get platform data
-	if util.Arch == "silicon" {
+	arch := util.Arch
+	if arch == "silicon" {
 		plfData = verData.Silicon
-	} else if util.Arch == "intel" {
+	} else if arch == "intel" {
 		plfData = verData.Intel
 	}
 
-	pkgUrl := fmt.Sprintf("%s/%s/%s/%s-%s-%s.tar.xz", repo.CorePackagesURL, pkgName, version, pkgName, version, util.Arch)
+	pkgUrl := fmt.Sprintf("%s/%s/%s/%s-%s-%s.tar.xz", repo.CorePackagesURL, pkgName, version, pkgName, version, arch)
 	pkgRepoUrl := fmt.Sprintf("%s/%s/%s", repo.CoreRepositoryURL, pkgName, version)
 
 	// get pkg size
