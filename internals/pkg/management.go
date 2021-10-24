@@ -59,6 +59,36 @@ func InstallPackage(pkg PkgData, force bool, yes bool) (err error) {
 
 	savePath := path.Join(config.C.Paths.Downloads, pkg.PkgDef.Package.Name)
 
+	// install dependencies
+	for _, dep := range pkg.VerData.Dependencies.Dependencies {
+		var name string
+		var version *string
+
+		if strings.Contains(dep, "@") {
+			splitted := strings.Split(dep, "@")
+			name = splitted[0]
+			version = &splitted[1]
+		} else {
+			name = dep
+			version = nil
+		}
+
+		pkgData, err := GetPackage(name, version)
+		if err != nil {
+			fmt.Printf("error while installing %s: %s\n", dep, err.Error())
+			continue
+		}
+
+		// TODO: dont force yes
+		err = InstallPackage(*pkgData, false, true)
+		if err != nil {
+			fmt.Printf("error while installing %s: %s\n", dep, err.Error())
+			continue
+		}
+
+		fmt.Printf("installed dependency %s@%s\n", pkgData.PkgDef.Package.Name, pkgData.PkgDef.Package.Version)
+	}
+
 	// run preinstall script
 	err = HandleScript("preinstall", pkg, savePath, yes)
 	if err != nil {
