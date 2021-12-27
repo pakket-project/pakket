@@ -16,6 +16,8 @@ var (
 	ConfigFile = path.Join(ConfigPath, "config.toml")
 	// Path to lockfile w/ currently installed packages
 	LockfilePath = path.Join(ConfigPath, "lockfile.toml")
+	// Path to local database
+	LocalPath = path.Join(ConfigPath, "local")
 )
 
 type Mirror struct {
@@ -73,6 +75,16 @@ func GetConfig() (err error) {
 		fmt.Println("no mirrors, automatically adding one...")
 
 		C.Mirrors = append(C.Mirrors, Mirror{URL: "https://core.pakket.sh", Name: "Main Pakket mirror"})
+		err := WriteConfig()
+		if err != nil {
+			return err
+		}
+	}
+
+	if C.Paths.Downloads == "" {
+		fmt.Println("download directory not set, automatically setting it...")
+
+		C.Paths.Downloads = "/var/tmp/pakket"
 		err := WriteConfig()
 		if err != nil {
 			return err
