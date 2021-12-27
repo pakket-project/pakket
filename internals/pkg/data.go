@@ -14,7 +14,6 @@ type Package struct {
 	Version           string   `toml:"version"`
 	License           string   `toml:"license"`
 	Homepage          string   `toml:"homepage"`
-	Head              string   `toml:"head"`
 	AvailableVersions []string `toml:"availableVersions"`
 }
 
