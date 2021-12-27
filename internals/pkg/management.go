@@ -19,6 +19,7 @@ import (
 func DownloadPackage(pkg PkgData, savePath string) (err error) {
 	err = os.MkdirAll(config.C.Paths.Downloads, 0770)
 	if err != nil {
+		fmt.Println("no download path specified in config")
 		return
 	}
 
