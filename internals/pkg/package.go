@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/pakket-project/pakket/internals/config"
 	"github.com/pakket-project/pakket/internals/errors"
 	"github.com/pakket-project/pakket/internals/repo"
 	uos "github.com/pakket-project/pakket/util/os"
@@ -95,7 +96,7 @@ func GetPackage(pkgName string, pkgVersion *string) (pkgData *PkgData, err error
 		plfData = verData.Intel
 	}
 
-	pkgUrl := fmt.Sprintf("%s/%s/%s/%s-%s-%s.tar.xz", repo.CorePackagesURL, pkgName, version, pkgName, version, arch)
+	pkgUrl := fmt.Sprintf("%s/%s/%s/%s-%s-%s.tar.xz", config.C.Mirrors[0].URL, pkgName, version, pkgName, version, arch)
 	pkgRepoUrl := fmt.Sprintf("%s/%s/%s", repo.CoreRepositoryURL, pkgName, version)
 
 	// get pkg size
