@@ -92,7 +92,7 @@ func (lock *LockfileStruct) Add(metadata LockfileMetadata, files []string) (err 
 
 // Remove package information from lockfile
 func (lock *LockfileStruct) Remove(name string) (lockfileData *LockfileMetadata, files []string, err error) {
-	if lock.Exists(name) {
+	if !lock.Exists(name) {
 		return nil, nil, errors.New("package not found")
 	}
 

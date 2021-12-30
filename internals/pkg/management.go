@@ -13,10 +13,11 @@ import (
 	"github.com/pakket-project/pakket/internals/config"
 	"github.com/pakket-project/pakket/internals/errors"
 	"github.com/pakket-project/pakket/util"
+	uos "github.com/pakket-project/pakket/util/os"
 )
 
 // download and unarchive package.
-func DownloadPackage(pkg PkgData, savePath string) (err error) {
+func (pkg *PkgData) Download(savePath string) (err error) {
 	err = os.MkdirAll(config.C.Paths.Downloads, 0770)
 	if err != nil {
 		fmt.Println("no download path specified in config")
@@ -52,7 +53,7 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 	return err
 }
 
-func InstallPackage(pkg PkgData, force bool, yes bool) (err error) {
+func (pkg *PkgData) Install(force bool, yes bool) (err error) {
 	// check if package is already installed
 	if config.Lockfile.Exists(pkg.PkgDef.Package.Name) {
 		return fmt.Errorf("%s is already installed", pkg.PkgDef.Package.Name)
@@ -81,7 +82,7 @@ func InstallPackage(pkg PkgData, force bool, yes bool) (err error) {
 		}
 
 		// TODO: dont force yes
-		err = InstallPackage(*pkgData, false, true)
+		err = pkgData.Install(false, true)
 		if err != nil {
 			fmt.Printf("error while installing %s: %s\n", dep, err.Error())
 			continue
@@ -91,12 +92,12 @@ func InstallPackage(pkg PkgData, force bool, yes bool) (err error) {
 	}
 
 	// run preinstall script
-	err = HandleScript("preinstall", pkg, savePath, yes)
+	err = pkg.HandleScript("preinstall", savePath, yes)
 	if err != nil {
 		return err
 	}
 
-	err = DownloadPackage(pkg, savePath) // Download package, save tar to tarPath
+	err = pkg.Download(savePath) // Download package, save tar to tarPath
 	defer os.RemoveAll(savePath)
 	if err != nil {
 		return err
@@ -134,7 +135,7 @@ func InstallPackage(pkg PkgData, force bool, yes bool) (err error) {
 		var exists bool
 		var confirm bool
 
-		exists = util.DoesPathExist(newPath)
+		exists = uos.DoesPathExist(newPath)
 		if exists && !force {
 			if !always {
 				confirm, always = util.DestructiveConfirm(fmt.Sprintf("File %s already exists. Overwrite?", newPath), true)
@@ -173,7 +174,7 @@ func InstallPackage(pkg PkgData, force bool, yes bool) (err error) {
 	}
 
 	// run postinstall script
-	err = HandleScript("postinstall", pkg, savePath, yes)
+	err = pkg.HandleScript("postinstall", savePath, yes)
 	if err != nil {
 		return err
 	}

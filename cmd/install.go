@@ -17,13 +17,6 @@ func init() {
 	installCmd.Flags().BoolVarP(&force, "force", "f", false, "force")
 }
 
-var (
-	pkgsToInstall []pkg.PkgData
-	pkgs          []string
-	// errors        []error
-	totalSize int64
-)
-
 // repo add
 var installCmd = &cobra.Command{
 	Use:     "install package[@version]",
@@ -31,6 +24,10 @@ var installCmd = &cobra.Command{
 	Args:    cobra.MinimumNArgs(1),
 	Example: "pakket install golang wget python@3.9",
 	Run: func(cmd *cobra.Command, args []string) {
+		var pkgsToInstall []pkg.PkgData
+		var pkgs []string
+		var totalSize int64
+
 		keys := make(map[string]bool)
 		for _, v := range args {
 			p := strings.Split(v, "@")
@@ -76,7 +73,7 @@ var installCmd = &cobra.Command{
 
 			if yes {
 				for _, v := range pkgsToInstall {
-					err := pkg.InstallPackage(v, force, yes)
+					err := v.Install(force, yes)
 					if err != nil {
 						fmt.Printf("\n%s: %s\n", style.Error.Render("Error"), err.Error())
 					} else {

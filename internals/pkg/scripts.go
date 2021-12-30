@@ -12,16 +12,16 @@ import (
 	"github.com/pakket-project/pakket/util/style"
 )
 
-func HandleScript(name string, pkg PkgData, savePath string, yes bool) (err error) {
+func (pkg *PkgData) HandleScript(name string, savePath string, yes bool) (err error) {
 	path := fmt.Sprintf("%s/%s.bash", savePath, name)
 
-	exists, err := downloadScript(name+".bash", pkg, path)
+	exists, err := pkg.downloadScript(name+".bash", path)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		err := runScript(name, pkg, savePath, yes)
+		err := pkg.runScript(name, savePath, yes)
 
 		if err != nil {
 			return err
@@ -31,7 +31,7 @@ func HandleScript(name string, pkg PkgData, savePath string, yes bool) (err erro
 	return nil
 }
 
-func downloadScript(name string, pkg PkgData, savePath string) (exists bool, err error) {
+func (pkg *PkgData) downloadScript(name string, savePath string) (exists bool, err error) {
 	url := fmt.Sprintf("%s/%s/%s/%s", repo.CoreRepositoryURL, pkg.PkgDef.Package.Name, pkg.PkgDef.Package.Version, name)
 	resp, err := grab.Get(savePath, url)
 
@@ -42,7 +42,7 @@ func downloadScript(name string, pkg PkgData, savePath string) (exists bool, err
 	return resp.HTTPResponse.StatusCode == 200, nil
 }
 
-func runScript(name string, pkg PkgData, savePath string, yes bool) (err error) {
+func (pkg *PkgData) runScript(name string, savePath string, yes bool) (err error) {
 	url := style.Link.Render(fmt.Sprintf("%s/%s.bash", pkg.RepoURL, name))
 	fmt.Printf("\nPackage %s has a %s script: %s \n", pkg.PkgDef.Package.Name, name, url)
 

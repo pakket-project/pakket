@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/pakket-project/pakket/internals/config"
 	"github.com/pakket-project/pakket/internals/pkg"
 	"github.com/pakket-project/pakket/util"
 	"github.com/pakket-project/pakket/util/style"
@@ -15,9 +16,7 @@ func init() {
 	removeCmd.Flags().BoolVarP(&yes, "yes", "y", false, "skips all confirmation prompts")
 }
 
-var (
-	pkgsToRemove []string
-)
+var ()
 
 // remove package
 var removeCmd = &cobra.Command{
@@ -27,6 +26,9 @@ var removeCmd = &cobra.Command{
 	Example: "pakket remove golang wget python",
 	Aliases: []string{"rm", "uninstall"},
 	Run: func(cmd *cobra.Command, args []string) {
+		var pkgsToRemove []string
+		var totalSize int64
+
 		keys := make(map[string]bool)
 		for _, v := range args {
 			name := v
@@ -35,17 +37,24 @@ var removeCmd = &cobra.Command{
 			if _, value := keys[name]; value {
 				continue
 			}
-			keys[name] = true
 
-			// check if package is already installed (lockfile)
-			// config.LockFile.Packages
+			// check if package is installed (lockfile)
+			if !config.Lockfile.Exists(name) {
+				fmt.Printf("package %s is not installed\n", name)
+				continue
+			}
+			keys[name] = true
 
 			pkgsToRemove = append(pkgsToRemove, name)
 
 			// totalSize += pkgData.BinSize
 		}
 
-		fmt.Printf("Packages to remove: %s (%d)\n", strings.Join(pkgs, ", "), len(pkgs))
+		if len(pkgsToRemove) == 0 {
+			return
+		}
+
+		fmt.Printf("Packages to remove: %s (%d)\n", strings.Join(pkgsToRemove, ", "), len(pkgsToRemove))
 		fmt.Printf("Total size removing: %s\n", util.ByteToString(totalSize))
 
 		if !yes {
@@ -59,7 +68,7 @@ var removeCmd = &cobra.Command{
 				if err != nil {
 					fmt.Printf("\n%s: %s\n", style.Error.Render("Error"), err.Error())
 				} else {
-					fmt.Printf("removed %s", v)
+					fmt.Printf("removed %s\n", v)
 				}
 			}
 		}

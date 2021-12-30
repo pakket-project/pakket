@@ -8,7 +8,7 @@ import (
 
 	"github.com/pakket-project/pakket/internals/errors"
 	"github.com/pakket-project/pakket/internals/repo"
-	"github.com/pakket-project/pakket/util"
+	uos "github.com/pakket-project/pakket/util/os"
 )
 
 // for use with GetPackage(). Contains all data needed to install a package.
@@ -21,6 +21,19 @@ type PkgData struct {
 	Version    string
 	Repository string
 	BinSize    int64
+}
+
+func NewPkgData(PkgDef PackageDefinition, VerData VersionMetadata, PlfData PlatformData, Repository string, Version string, TarURL string, RepoURL string, BinSize int64) *PkgData {
+	return &PkgData{
+		PkgDef:     PkgDef,
+		VerData:    VerData,
+		PlfData:    PlfData,
+		Repository: Repository,
+		Version:    Version,
+		TarURL:     TarURL,
+		RepoURL:    RepoURL,
+		BinSize:    BinSize,
+	}
 }
 
 // One function to get all information needed to install a package. Version should be "latest" for latest version. binSize is the size of the tarball in bytes.
@@ -75,7 +88,7 @@ func GetPackage(pkgName string, pkgVersion *string) (pkgData *PkgData, err error
 	var plfData PlatformData
 
 	// get platform data
-	arch := util.Arch
+	arch := uos.Arch
 	if arch == "silicon" {
 		plfData = verData.Silicon
 	} else if arch == "intel" {
@@ -88,7 +101,7 @@ func GetPackage(pkgName string, pkgVersion *string) (pkgData *PkgData, err error
 	// get pkg size
 	size, err := GetPackageSize(pkgUrl)
 
-	return &PkgData{PkgDef: pkgDef, VerData: verData, PlfData: plfData, Repository: "core", Version: version, TarURL: pkgUrl, RepoURL: pkgRepoUrl, BinSize: size}, err
+	return NewPkgData(pkgDef, verData, plfData, "core", version, pkgUrl, pkgRepoUrl, size), err
 }
 
 func GetPackageSize(url string) (bytes int64, err error) {
