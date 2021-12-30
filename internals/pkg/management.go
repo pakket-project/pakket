@@ -54,8 +54,8 @@ func DownloadPackage(pkg PkgData, savePath string) (err error) {
 
 func InstallPackage(pkg PkgData, force bool, yes bool) (err error) {
 	// check if package is already installed
-	if v, ok := config.LockFile.Packages[pkg.PkgDef.Package.Name]; ok {
-		return fmt.Errorf("%s is already installed", v.Name)
+	if config.Lockfile.Exists(pkg.PkgDef.Package.Name) {
+		return fmt.Errorf("%s is already installed", pkg.PkgDef.Package.Name)
 	}
 
 	savePath := path.Join(config.C.Paths.Downloads, pkg.PkgDef.Package.Name)
@@ -167,12 +167,12 @@ func InstallPackage(pkg PkgData, force bool, yes bool) (err error) {
 	}
 
 	// add to lockfile
-	err = config.AddPkgToLockfile(config.LockfileMetadata{Name: pkg.PkgDef.Package.Name, Version: pkg.Version, Checksum: pkg.PlfData.Checksum, Repository: pkg.Repository}, finalPaths)
+	err = config.Lockfile.Add(config.NewMetadata(pkg.PkgDef.Package.Name, pkg.Version, pkg.PlfData.Checksum, pkg.Repository), finalPaths)
 	if err != nil {
 		return err
 	}
 
-	//run postinstall script
+	// run postinstall script
 	err = HandleScript("postinstall", pkg, savePath, yes)
 	if err != nil {
 		return err
@@ -183,7 +183,7 @@ func InstallPackage(pkg PkgData, force bool, yes bool) (err error) {
 
 func RemovePackage(pkg string) (err error) {
 	// remove from lockfile
-	_, files, err := config.RemovePkgFromLockfile(pkg)
+	_, files, err := config.Lockfile.Remove(pkg)
 	if err != nil {
 		return err
 	}

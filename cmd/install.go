@@ -43,8 +43,8 @@ var installCmd = &cobra.Command{
 			keys[name] = true
 
 			// check if package is already installed (lockfile)
-			if v, ok := config.LockFile.Packages[name]; ok {
-				fmt.Printf("%s is already installed\n", v.Name)
+			if config.Lockfile.Exists(name) {
+				fmt.Printf("%s is already installed\n", name)
 				continue
 			}
 

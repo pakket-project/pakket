@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	LockFile LockfileStruct
+	Lockfile LockfileStruct
 )
 
 type LockfileMetadata struct {
@@ -19,6 +19,15 @@ type LockfileMetadata struct {
 	Version    string `toml:"version"`
 	Checksum   string `toml:"checksum"`
 	Repository string `toml:"repository"`
+}
+
+func NewMetadata(name, version, checksum, repository string) LockfileMetadata {
+	return LockfileMetadata{
+		Name:       name,
+		Version:    version,
+		Checksum:   checksum,
+		Repository: repository,
+	}
 }
 
 type LockfileStruct struct {
@@ -40,20 +49,20 @@ func GetLockfile() (err error) {
 		return err
 	}
 
-	err = toml.Unmarshal(file, &LockFile)
+	err = toml.Unmarshal(file, &Lockfile)
 
 	return err
 }
 
 // Add package information to lockfile
-func AddPkgToLockfile(metadata LockfileMetadata, files []string) (err error) {
-	if len(LockFile.Packages) == 0 {
-		LockFile.Packages = make(map[string]LockfileMetadata)
+func (lock *LockfileStruct) Add(metadata LockfileMetadata, files []string) (err error) {
+	if len(lock.Packages) == 0 {
+		lock.Packages = make(map[string]LockfileMetadata)
 	}
 
-	LockFile.Packages[metadata.Name] = metadata
+	lock.Packages[metadata.Name] = metadata
 
-	newLockfile, err := toml.Marshal(&LockFile)
+	newLockfile, err := toml.Marshal(&lock)
 	if err != nil {
 		return err
 	}
@@ -82,32 +91,38 @@ func AddPkgToLockfile(metadata LockfileMetadata, files []string) (err error) {
 }
 
 // Remove package information from lockfile
-func RemovePkgFromLockfile(name string) (lockfileData LockfileMetadata, files []string, err error) {
-	if _, ok := LockFile.Packages[name]; !ok {
-		return LockfileMetadata{}, nil, errors.New("package not found")
+func (lock *LockfileStruct) Remove(name string) (lockfileData *LockfileMetadata, files []string, err error) {
+	if lock.Exists(name) {
+		return nil, nil, errors.New("package not found")
 	}
-	lockfile := LockFile.Packages[name]
-	delete(LockFile.Packages, name)
 
-	newLockfile, err := toml.Marshal(&LockFile)
+	lockfile := lock.Packages[name]
+	delete(lock.Packages, name)
+
+	newLockfile, err := toml.Marshal(&lock)
 	if err != nil {
-		return LockfileMetadata{}, nil, err
+		return nil, nil, err
 	}
 
 	err = os.WriteFile(LockfilePath, newLockfile, 0666)
 	if err != nil {
-		return LockfileMetadata{}, nil, err
+		return nil, nil, err
 	}
 
 	// delete files from local db
 	fileBytes, err := os.ReadFile(path.Join(LocalPath, fmt.Sprintf("%s-%s", lockfile.Name, lockfile.Version), "files"))
 	if err != nil {
-		return LockfileMetadata{}, nil, err
+		return nil, nil, err
 	}
 
 	files = strings.Split(string(fileBytes), "\n")
 
 	err = os.RemoveAll(path.Join(LocalPath, fmt.Sprintf("%s-%s", lockfile.Name, lockfile.Version)))
 
-	return lockfile, files, err
+	return &lockfile, files, err
+}
+
+func (lock *LockfileStruct) Exists(pkgName string) bool {
+	_, ok := lock.Packages[pkgName]
+	return ok
 }

@@ -20,10 +20,17 @@ var listCmd = &cobra.Command{
 	Example: "pakket list",
 	Run: func(cmd *cobra.Command, args []string) {
 		var packages []string
-		for _, v := range config.LockFile.Packages {
+		amount := len(config.Lockfile.Packages)
+
+		if amount == 0 {
+			fmt.Println("No packages installed.")
+			return
+		}
+
+		for _, v := range config.Lockfile.Packages {
 			packages = append(packages, v.Name)
 		}
 
-		fmt.Printf("Installed packages:\n\n%s\n", strings.Join(packages, "\n"))
+		fmt.Printf("Installed packages (%d):\n\n* %s\n", amount, strings.Join(packages, "\n* "))
 	},
 }
