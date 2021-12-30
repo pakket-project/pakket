@@ -167,7 +167,7 @@ func InstallPackage(pkg PkgData, force bool, yes bool) (err error) {
 	}
 
 	// add to lockfile
-	err = config.AddPkgToLockfile(config.LockfileMetadata{Name: pkg.PkgDef.Package.Name, Version: pkg.Version, Checksum: pkg.PlfData.Checksum, Repository: pkg.Repository, Files: finalPaths})
+	err = config.AddPkgToLockfile(config.LockfileMetadata{Name: pkg.PkgDef.Package.Name, Version: pkg.Version, Checksum: pkg.PlfData.Checksum, Repository: pkg.Repository}, finalPaths)
 	if err != nil {
 		return err
 	}
@@ -183,12 +183,12 @@ func InstallPackage(pkg PkgData, force bool, yes bool) (err error) {
 
 func RemovePackage(pkg string) (err error) {
 	// remove from lockfile
-	lockfile, err := config.RemovePkgFromLockfile(pkg)
+	_, files, err := config.RemovePkgFromLockfile(pkg)
 	if err != nil {
 		return err
 	}
 
-	for _, path := range lockfile.Files {
+	for _, path := range files {
 		err = os.Remove(path)
 		if err != nil {
 			return err

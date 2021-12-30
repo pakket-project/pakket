@@ -45,6 +45,7 @@ var (
 
 func GetConfig() (err error) {
 	var file []byte
+
 	file, err = os.ReadFile(ConfigFile)
 	if errors.Is(err, os.ErrNotExist) {
 		_, err = os.Create(ConfigFile)
