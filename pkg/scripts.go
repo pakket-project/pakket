@@ -6,8 +6,8 @@ import (
 	"os/exec"
 
 	"github.com/cavaliercoder/grab"
-	"github.com/pakket-project/pakket/internals/config"
-	"github.com/pakket-project/pakket/internals/repo"
+	"github.com/pakket-project/pakket/config"
+	"github.com/pakket-project/pakket/repo"
 	"github.com/pakket-project/pakket/util"
 	"github.com/pakket-project/pakket/util/style"
 )

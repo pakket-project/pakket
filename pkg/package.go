@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/pakket-project/pakket/internals/config"
-	"github.com/pakket-project/pakket/internals/errors"
-	"github.com/pakket-project/pakket/internals/repo"
+	"github.com/pakket-project/pakket/config"
+	"github.com/pakket-project/pakket/errors"
+	"github.com/pakket-project/pakket/repo"
 	uos "github.com/pakket-project/pakket/util/os"
 )
 

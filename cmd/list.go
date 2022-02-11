@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pakket-project/pakket/internals/config"
+	"github.com/pakket-project/pakket/config"
 	"github.com/spf13/cobra"
 )
 

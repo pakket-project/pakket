@@ -10,8 +10,8 @@ import (
 
 	"github.com/cavaliercoder/grab"
 	"github.com/go-vela/archiver/v3"
-	"github.com/pakket-project/pakket/internals/config"
-	"github.com/pakket-project/pakket/internals/errors"
+	"github.com/pakket-project/pakket/config"
+	"github.com/pakket-project/pakket/errors"
 	"github.com/pakket-project/pakket/util"
 	uos "github.com/pakket-project/pakket/util/os"
 )

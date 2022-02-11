@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pakket-project/pakket/internals/errors"
-	"github.com/pakket-project/pakket/internals/pkg"
+	"github.com/pakket-project/pakket/errors"
+	"github.com/pakket-project/pakket/pkg"
 	"github.com/pakket-project/pakket/util"
 	"github.com/pakket-project/pakket/util/style"
 	"github.com/spf13/cobra"

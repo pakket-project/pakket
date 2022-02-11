@@ -6,7 +6,7 @@ import (
 	"runtime"
 
 	"github.com/pakket-project/pakket/cmd"
-	"github.com/pakket-project/pakket/internals/config"
+	"github.com/pakket-project/pakket/config"
 	uos "github.com/pakket-project/pakket/util/os"
 )
 
