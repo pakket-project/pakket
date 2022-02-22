@@ -1,34 +1,34 @@
-name: CI
+# name: CI
 
-on:
-  push:
-    branches: [develop]
-  pull_request:
-    branches: [develop]
+# on:
+#   push:
+#     branches: [develop]
+#   pull_request:
+#     branches: [develop]
 
-jobs:
-  build:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
+# jobs:
+#   build:
+#     runs-on: macos-latest
+#     steps:
+#       - uses: actions/checkout@v2
 
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.16
+#       - name: Set up Go
+#         uses: actions/setup-go@v2
+#         with:
+#           go-version: 1.16
 
-      - name: Checkout code
-        uses: actions/checkout@v2
+#       - name: Checkout code
+#         uses: actions/checkout@v2
 
-      - uses: actions/cache@v2
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
+#       - uses: actions/cache@v2
+#         with:
+#           path: ~/go/pkg/mod
+#           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+#           restore-keys: |
+#             ${{ runner.os }}-go-
 
-      - name: Download Go modules
-        run: go mod download
+#       - name: Download Go modules
+#         run: go mod download
 
-      - name: Build
-        run: go build -v ./...
+#       - name: Build
+#         run: go build -v ./...
