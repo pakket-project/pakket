@@ -10,7 +10,7 @@ The new alternative to Homebrew, MacPorts and Fink.
 ## Installation
 
 ```bash
-# installatiomn
+# installation
 ```
 
 ## Documentation

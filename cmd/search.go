@@ -69,7 +69,6 @@ var searchCmd = &cobra.Command{
 		// Print package information
 		fmt.Printf("Description: %s\n", pkgData.PkgDef.Package.Description)
 		fmt.Printf("Latest version: %s\n", pkgData.PkgDef.Package.Version)
-		fmt.Printf("Available versions: %s\n", strings.Join(pkgData.PkgDef.Package.AvailableVersions, ", "))
 		fmt.Printf("Homepage: %s\n\n", style.Link.Render(pkgData.PkgDef.Package.Homepage))
 
 		intelPackage := style.Success.Render("✓")

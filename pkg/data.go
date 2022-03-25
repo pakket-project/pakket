@@ -9,12 +9,11 @@ type PackageDefinition struct {
 }
 
 type Package struct {
-	Name              string   `toml:"name"`
-	Description       string   `toml:"description"`
-	Version           string   `toml:"version"`
-	License           string   `toml:"license"`
-	Homepage          string   `toml:"homepage"`
-	AvailableVersions []string `toml:"availableVersions"`
+	Name        string `toml:"name"`
+	Description string `toml:"description"`
+	Version     string `toml:"version"`
+	License     string `toml:"license"`
+	Homepage    string `toml:"homepage"`
 }
 
 type Dependencies struct {
