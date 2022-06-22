@@ -14,24 +14,24 @@ type Package struct {
 	Version     string `toml:"version"`
 	License     string `toml:"license"`
 	Homepage    string `toml:"homepage"`
-	Homebrew    bool   `toml:"homebrew"`
+	Homebrew    bool   `toml:"homebrew,omitempty"`
 }
 
 type Dependencies struct {
-	Dependencies         []string `toml:"dependencies"`
-	BuildDependencies    []string `toml:"buildDependencies"`
-	OptionalDependencies []string `toml:"optionalDependencies"`
+	Dependencies         []string `toml:"dependencies,omitempty"`
+	BuildDependencies    []string `toml:"buildDependencies,omitempty"`
+	OptionalDependencies []string `toml:"optionalDependencies,omitempty"`
 }
 
 type PlatformData struct {
-	Checksum string `toml:"checksum"`
+	Checksum string `toml:"checksum,omitempty"`
 }
 
 type VersionMetadata struct {
 	Url          string       `toml:"url"`
-	Dependencies Dependencies `toml:"dependencies"`
-	Intel        PlatformData `toml:"intel"`
-	Silicon      PlatformData `toml:"silicon"`
+	Dependencies Dependencies `toml:"dependencies,omitempty"`
+	Intel        PlatformData `toml:"intel,omitempty"`
+	Silicon      PlatformData `toml:"silicon,omitempty"`
 }
 
 // Convert data to version metadata
