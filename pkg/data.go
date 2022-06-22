@@ -14,6 +14,7 @@ type Package struct {
 	Version     string `toml:"version"`
 	License     string `toml:"license"`
 	Homepage    string `toml:"homepage"`
+	Homebrew    bool   `toml:"homebrew"`
 }
 
 type Dependencies struct {
@@ -27,11 +28,10 @@ type PlatformData struct {
 }
 
 type VersionMetadata struct {
-	Url             string       `toml:"url"`
-	Dependencies    Dependencies `toml:"dependencies"`
-	SupportsRosetta bool         `toml:"supportsRosetta"`
-	Intel           PlatformData `toml:"intel"`
-	Silicon         PlatformData `toml:"silicon"`
+	Url          string       `toml:"url"`
+	Dependencies Dependencies `toml:"dependencies"`
+	Intel        PlatformData `toml:"intel"`
+	Silicon      PlatformData `toml:"silicon"`
 }
 
 // Convert data to version metadata
