@@ -18,9 +18,9 @@ type Package struct {
 }
 
 type Dependencies struct {
-	Dependencies         []string `toml:"dependencies,omitempty"`
-	BuildDependencies    []string `toml:"buildDependencies,omitempty"`
-	OptionalDependencies []string `toml:"optionalDependencies,omitempty"`
+	Dependencies         []string `toml:"dependencies,multiline,omitempty"`
+	BuildDependencies    []string `toml:"buildDependencies,multiline,omitempty"`
+	OptionalDependencies []string `toml:"optionalDependencies,multiline,omitempty"`
 }
 
 type PlatformData struct {

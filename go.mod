@@ -14,7 +14,7 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/nwaples/rardecode v1.1.2 // indirect
-	github.com/pelletier/go-toml/v2 v2.0.0-beta.3
+	github.com/pelletier/go-toml/v2 v2.0.2
 	github.com/pierrec/lz4/v4 v4.1.8 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/spf13/cobra v1.2.1
