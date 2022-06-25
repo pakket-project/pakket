@@ -30,13 +30,13 @@ type PlatformData struct {
 type VersionMetadata struct {
 	Url          string       `toml:"url"`
 	Dependencies Dependencies `toml:"dependencies,omitempty"`
-	Intel        PlatformData `toml:"intel,omitempty"`
-	Silicon      PlatformData `toml:"silicon,omitempty"`
+	Amd64        PlatformData `toml:"amd64,omitempty"`
+	Arm64        PlatformData `toml:"arm64,omitempty"`
 }
 
 // Convert data to version metadata
 func ParseVersion(versionMetadata []byte) (VersionMetadata, error) {
-	metadata := VersionMetadata{Intel: PlatformData{Checksum: ""}, Silicon: PlatformData{Checksum: ""}}
+	metadata := VersionMetadata{Amd64: PlatformData{Checksum: ""}, Arm64: PlatformData{Checksum: ""}}
 	err := toml.Unmarshal(versionMetadata, &metadata)
 
 	return metadata, err

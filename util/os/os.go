@@ -7,11 +7,6 @@ import (
 	"strings"
 )
 
-var (
-	// either "intel" or "silicon"
-	Arch string
-)
-
 // Check if path exists
 func DoesPathExist(path string) bool {
 	_, err := os.Stat(path)

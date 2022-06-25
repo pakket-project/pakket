@@ -26,11 +26,6 @@ type BuildOptions struct {
 	Static bool
 }
 
-const (
-	SiliconArch = "arm64"
-	IntelArch   = "amd64"
-)
-
 func build(arch string, opts BuildOptions) error {
 	env := map[string]string{
 		"GOOS":   "darwin",
@@ -42,17 +37,9 @@ func build(arch string, opts BuildOptions) error {
 		env["CGO_ENABLED"] = "0"
 	}
 
-	var outputName string
+	outputName := fmt.Sprintf("pakket-%s", arch)
 
-	if arch == SiliconArch {
-		outputName = "pakket-silicon"
-
-		fmt.Println("Building pakket for Silicon architecture...")
-	} else if arch == IntelArch {
-		outputName = "pakket-intel"
-
-		fmt.Println("Building pakket for Intel architecture...")
-	}
+	fmt.Printf("Building pakket for %s architecture...\n", arch)
 
 	outputPath := path.Join(
 		buildDir,
@@ -74,11 +61,11 @@ func build(arch string, opts BuildOptions) error {
 }
 
 func (Build) Intel() error {
-	return build(IntelArch, BuildOptions{})
+	return build("amd64", BuildOptions{})
 }
 
 func (Build) Silicon() error {
-	return build(SiliconArch, BuildOptions{})
+	return build("arm64", BuildOptions{})
 }
 
 func (Build) All() {
@@ -90,9 +77,5 @@ func Clean() {
 }
 
 func Install() {
-	if runtime.GOARCH == "arm64" {
-		os.Rename("build/pakket-silicon", "/usr/local/bin/pakket")
-	} else if runtime.GOARCH == "amd64" {
-		os.Rename("build/pakket-intel", "/usr/local/bin/pakket")
-	}
+	os.Rename(fmt.Sprintf("build/pakket-%s", runtime.GOARCH), "/usr/local/bin/pakket")
 }

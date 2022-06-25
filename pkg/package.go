@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"runtime"
 	"strconv"
 
 	"github.com/pakket-project/pakket/config"
 	"github.com/pakket-project/pakket/errors"
 	"github.com/pakket-project/pakket/repo"
-	uos "github.com/pakket-project/pakket/util/os"
 )
 
 // for use with GetPackage(). Contains all data needed to install a package.
@@ -89,16 +89,15 @@ func GetPackage(pkgName string, pkgVersion *string) (pkgData *PkgData, err error
 	var plfData PlatformData
 
 	// get platform data
-	arch := uos.Arch
-	if arch == "silicon" {
-		plfData = verData.Silicon
-	} else if arch == "intel" {
-		plfData = verData.Intel
+	if runtime.GOARCH == "arm64" {
+		plfData = verData.Arm64
+	} else if runtime.GOARCH == "amd64" {
+		plfData = verData.Amd64
 	}
 
-	pkgUrl := fmt.Sprintf("%s/%s/%s/%s-%s-%s.tar.xz", config.C.Mirrors[0].URL, pkgName, version, pkgName, version, arch)
+	pkgUrl := fmt.Sprintf("%s/%s/%s/%s-%s-%s.tar.xz", config.C.Mirrors[0].URL, pkgName, version, pkgName, version, runtime.GOARCH)
 	pkgRepoUrl := fmt.Sprintf("%s/%s/%s", repo.CoreRepositoryURL, pkgName, version)
-
+	fmt.Println(pkgUrl, pkgRepoUrl)
 	// get pkg size
 	size, err := GetPackageSize(pkgUrl)
 

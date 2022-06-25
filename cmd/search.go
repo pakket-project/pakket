@@ -68,13 +68,13 @@ var searchCmd = &cobra.Command{
 		siliconPackage := style.Success.Render("✓")
 
 		// Packages
-		if pkgData.VerData.Intel.Checksum == "" {
+		if pkgData.VerData.Amd64.Checksum == "" {
 			// no intel package
 			intelPackage = style.Error.Render("✗")
 		}
 		fmt.Printf("Intel: %s\n", intelPackage)
 
-		if pkgData.VerData.Silicon.Checksum == "" {
+		if pkgData.VerData.Arm64.Checksum == "" {
 			// no silicon package
 			siliconPackage = style.Error.Render("✗")
 			fmt.Printf("Apple Silicon: %s\n", siliconPackage)
